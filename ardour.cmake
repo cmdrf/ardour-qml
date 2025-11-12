@@ -1,10 +1,23 @@
-set(A ardour)
+set(A ${CMAKE_CURRENT_SOURCE_DIR}/ardour)
 
 find_package(Boost REQUIRED)
 find_package(LibXml2 REQUIRED)
+find_package(LibArchive REQUIRED)
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(GLIB2 REQUIRED glib-2.0 glibmm-2.4)
+pkg_check_modules(GLIB2 REQUIRED IMPORTED_TARGET glib-2.0 glibmm-2.4)
+
+find_path(LILV_INCLUDE_DIR
+    NAMES lilv/lilv.h
+    HINTS /opt/homebrew/include/lilv-0
+    REQUIRED
+)
+
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/pbd/signals_generated.h
+    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/pbd/
+    COMMAND python3 ${A}/libs/pbd/pbd/signals.py ${CMAKE_CURRENT_BINARY_DIR}/pbd/signals_generated.h
+)
 
 add_library(ardourlib
 #    ${A}/libs/ardour/aarch64_neon_functions.cc
@@ -82,10 +95,14 @@ add_library(ardourlib
     ${A}/libs/ardour/session_bundles.cc
     ${A}/libs/ardour/session_butler.cc
     ${A}/libs/ardour/session.cc
+
+    ${CMAKE_CURRENT_BINARY_DIR}/pbd/signals_generated.h
 )
 
 target_include_directories(ardourlib PUBLIC
-    ${GLIB2_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${LILV_INCLUDE_DIR}
     /usr/include/sigc++-2.0/
     /usr/lib/x86_64-linux-gnu/sigc++-2.0/include/
     /usr/include/lilv-0/
@@ -103,9 +120,9 @@ target_include_directories(ardourlib PUBLIC
 )
 
 target_link_libraries(ardourlib PUBLIC
-#    Boost::temporal
     LibXml2::LibXml2
-    ${GLIB2_LIBRARIES}
+    LibArchive::LibArchive
+    PkgConfig::GLIB2
 )
 
 target_compile_definitions(ardourlib PRIVATE
@@ -113,4 +130,5 @@ target_compile_definitions(ardourlib PRIVATE
     PROGRAM_VERSION="6"
     PACKAGE="Ardour"
     CURRENT_SESSION_FILE_VERSION=7003
+    HAVE_LV2_1_10_0
 )
