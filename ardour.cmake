@@ -1,4 +1,4 @@
-set(A ../../ardour)
+set(A ardour)
 
 find_package(Boost REQUIRED)
 find_package(LibXml2 REQUIRED)
