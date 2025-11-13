@@ -1,0 +1,6 @@
+#include "ardour/revision.h"
+
+namespace ARDOUR {
+	const char* revision = "TODO";
+	const char* date = "TODO";
+}

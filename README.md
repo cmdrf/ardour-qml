@@ -7,10 +7,10 @@ QML bindings for Ardour lib.
 Debian:
 
 ```
-vamp-plugin-sdk libarchive-dev lv2-dev libfftw3-dev liblilv-dev liblo-dev librubberband-dev libsoundtouch-dev libltc-dev libsndfile1-dev
+vamp-plugin-sdk libarchive-dev lv2-dev libfftw3-dev liblilv-dev liblo-dev librubberband-dev libsoundtouch-dev libltc-dev libsndfile1-dev libtag1-dev libsigc++-2.0-dev
 ```
 
 Homebrew:
 ```
-glibmm liblo lilv fftw lv2 libarchive libsamplerate vamp-plugin-sdk boost rubberband sound-touch libltc
+glibmm liblo lilv fftw lv2 libarchive libsamplerate vamp-plugin-sdk boost rubberband sound-touch libltc taglib
 ```
