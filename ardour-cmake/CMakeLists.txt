@@ -35,6 +35,7 @@ if(APPLE)
 endif()
 
 add_subdirectory(audiographer)
+add_subdirectory(ctrl-interface)
 add_subdirectory(evoral)
 add_subdirectory(fluidsynth)
 add_subdirectory(lua)
