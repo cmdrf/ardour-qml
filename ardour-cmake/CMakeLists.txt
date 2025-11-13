@@ -357,8 +357,6 @@ add_library(ardourlib
 #    ${A}/x86_functions_avx512f.cc
 #    ${A}/x86_functions_fma.cc
     ${A}/zeroconf.cc
-
-    ${L}/zita-convolver/zita-convolver.cc
 )
 
 target_include_directories(ardourlib PUBLIC
