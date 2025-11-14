@@ -1,6 +1,6 @@
 set(E ${L}/evoral)
 
-add_library(evoral
+add_library(evoral STATIC
 	${E}/Control.cc
 	${E}/ControlList.cc
 	${E}/ControlSet.cc
@@ -31,3 +31,5 @@ target_link_libraries(evoral PUBLIC
 target_compile_definitions(evoral PRIVATE
 	SMF_VERSION="1.2"
 )
+
+set_property(TARGET evoral PROPERTY POSITION_INDEPENDENT_CODE ON)

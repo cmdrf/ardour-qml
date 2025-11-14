@@ -1,4 +1,4 @@
-add_library(midi++2
+add_library(midi++2 STATIC
 	${L}/midi++2/channel.cc
 	${L}/midi++2/ipmidi_port.cc
 	${L}/midi++2/midi.cc
@@ -17,3 +17,5 @@ target_link_libraries(midi++2 PUBLIC
 	pbd
 	temporal
 )
+
+set_property(TARGET midi++2 PROPERTY POSITION_INDEPENDENT_CODE ON)

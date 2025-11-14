@@ -1,4 +1,4 @@
-add_library(zita-resampler
+add_library(zita-resampler STATIC
 	${L}/zita-resampler/cresampler.cc
 	${L}/zita-resampler/resampler-table.cc
 	${L}/zita-resampler/resampler.cc
@@ -9,3 +9,5 @@ add_library(zita-resampler
 target_include_directories(zita-resampler PUBLIC
 	${L}/zita-resampler
 )
+
+set_property(TARGET zita-resampler PROPERTY POSITION_INDEPENDENT_CODE ON)

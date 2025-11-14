@@ -71,3 +71,5 @@ target_include_directories(fluidsynth PRIVATE
 target_link_libraries(fluidsynth PUBLIC
 	PkgConfig::GLIB2
 )
+
+set_property(TARGET fluidsynth PROPERTY POSITION_INDEPENDENT_CODE ON)

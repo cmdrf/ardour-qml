@@ -1,8 +1,3 @@
-add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/signals_generated.h
-	COMMAND python3 ${L}/pbd/pbd/signals.py ${CMAKE_CURRENT_BINARY_DIR}/signals_generated.h
-)
-
 configure_file(libpbd-config.h.in libpbd-config.h)
 
 add_library(pbd SHARED
@@ -72,8 +67,6 @@ add_library(pbd SHARED
 	${L}/pbd/uuid.cc
 	${L}/pbd/whitespace.cc
 	${L}/pbd/xml++.cc
-
-	${CMAKE_CURRENT_BINARY_DIR}/signals_generated.h
 )
 
 if(MSVC)
@@ -91,6 +84,12 @@ if(APPLE)
 
 	target_link_libraries(pbd PUBLIC
 		"$<LINK_LIBRARY:FRAMEWORK,Cocoa>"
+	)
+endif()
+
+if(UNIX AND NOT APPLE)
+	target_compile_definitions(pbd PRIVATE
+		HAVE_GETMNTENT
 	)
 endif()
 

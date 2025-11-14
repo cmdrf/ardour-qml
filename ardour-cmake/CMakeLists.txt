@@ -75,7 +75,6 @@ add_library(ardourlib SHARED
 	${A}/audio_track_importer.cc
 	${A}/audio_track.cc
     ${A}/audioengine.cc
-	${A}/audio_unit.cc
 	${A}/audioanalyser.cc
 	${A}/audiofile_tagger.cc
 	${A}/audiofilesource.cc
@@ -88,7 +87,6 @@ add_library(ardourlib SHARED
 	${A}/automation_list.cc
 	${A}/automation_watch.cc
 	${A}/automation.cc
-	${A}/auv2_scan.cc
 #	${A}/beatbox.cc
 	${A}/broadcast_info.cc
 	${A}/buffer_manager.cc
@@ -96,7 +94,6 @@ add_library(ardourlib SHARED
 	${A}/buffer.cc
 	${A}/bundle.cc
 	${A}/butler.cc
-	${A}/caimportable.cc
 	${A}/capturing_processor.cc
 	${A}/chan_count.cc
 	${A}/chan_mapping.cc
@@ -105,7 +102,6 @@ add_library(ardourlib SHARED
 	${A}/control_group.cc
 	${A}/control_protocol_manager.cc
 	${A}/convolver.cc
-	${A}/coreaudiosource.cc
 	${A}/cycle_timer.cc
 	${A}/data_type.cc
 	${A}/debug.cc
@@ -396,6 +392,12 @@ target_link_libraries(ardourlib PUBLIC
 )
 
 if(APPLE)
+	target_sources(ardourlib PRIVATE
+		${A}/audio_unit.cc
+		${A}/auv2_scan.cc
+		${A}/caimportable.cc
+		${A}/coreaudiosource.cc
+	)
 	target_link_libraries(ardourlib PUBLIC
 		appleutility
         "$<LINK_LIBRARY:FRAMEWORK,AudioToolbox>"

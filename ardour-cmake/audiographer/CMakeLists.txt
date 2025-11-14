@@ -1,4 +1,4 @@
-add_library(audiographer
+add_library(audiographer STATIC
 	${L}/audiographer/src/debug_utils.cc
 	${L}/audiographer/src/general/analyser.cc
 	${L}/audiographer/src/general/broadcast_info.cc
@@ -25,3 +25,5 @@ target_link_libraries(audiographer PUBLIC
 	pbd
 	temporal
 )
+
+set_property(TARGET audiographer PROPERTY POSITION_INDEPENDENT_CODE ON)
