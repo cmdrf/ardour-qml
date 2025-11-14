@@ -9,6 +9,7 @@ add_library(pbd
 	${L}/pbd/base_ui.cc
 	${L}/pbd/basename.cc
 	${L}/pbd/cartesian.cc
+	${L}/pbd/ccurl.cc
 	${L}/pbd/command.cc
 	${L}/pbd/configuration_variable.cc
 	${L}/pbd/convert.cc
@@ -16,6 +17,7 @@ add_library(pbd
 	${L}/pbd/debug.cc
 	${L}/pbd/epa.cc
 	${L}/pbd/event_loop.cc
+	${L}/pbd/history_owner.cc
 	${L}/pbd/pool.cc
 	${L}/pbd/progress.cc
 	${L}/pbd/property_list.cc
@@ -45,7 +47,6 @@ add_library(pbd
 	${L}/pbd/file_archive.cc
 	${L}/pbd/file_utils.cc
 	${L}/pbd/string_convert.cc
-	${L}/pbd/pbd/abstract_ui.cc
 	${L}/pbd/utf8_utils.cc
 	${L}/pbd/inflater.cc
 #    ${L}/pbd/windows_special_dirs.cc

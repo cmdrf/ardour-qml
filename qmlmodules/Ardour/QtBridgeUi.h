@@ -22,7 +22,7 @@ public:
 
 	static QtBridgeUi& instance();
 
-	void connect(PBD::Signal0<void>& signal, QObject *receiver, const char *method);
+	void connect(PBD::Signal<void ()>& signal, QObject *receiver, const char *method);
 
 protected:
 	void thread_init();

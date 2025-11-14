@@ -1,10 +1,12 @@
 #include "QtBridgeUi.h"
 
-#include <pbd/abstract_ui.cc>  /* instantiate the template */
+#include <memory>
 
 #include <QDebug>
 #include <QMetaMethod>
 #include <QPointer>
+
+#include "pbd/abstract_ui.inc.cc" /* instantiate the template */
 
 QtBridgeUi::QtBridgeUi(QObject *parent) :
 	QObject{parent},
@@ -21,7 +23,7 @@ QtBridgeUi& QtBridgeUi::instance()
 	return inst;
 }
 
-void QtBridgeUi::connect(PBD::Signal0<void>& signal, QObject* receiver, const char* method)
+void QtBridgeUi::connect(PBD::Signal<void()>& signal, QObject* receiver, const char* method)
 {
 	QPointer<QObject> receiverPtr(receiver);
 	int methodIndex = receiver->metaObject()->indexOfMethod(method);
@@ -56,6 +58,6 @@ void QtBridgeUi::thread_init()
 
 void QtBridgeUi::do_request(QtBridgeUiRequest* req)
 {
-	if(req->type == CallSlot)
+	if(req->type == BaseUI::CallSlot)
 		req->the_slot();
 }

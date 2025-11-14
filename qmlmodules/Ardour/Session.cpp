@@ -26,11 +26,11 @@ Session::RecordState Session::recordState() const
 {
 	switch(m_session->record_status())
 	{
-		case ARDOUR::Session::Disabled:
+		case ARDOUR::Disabled:
 			return Disabled;
-		case ARDOUR::Session::Enabled:
+		case ARDOUR::Enabled:
 			return Enabled;
-		case ARDOUR::Session::Recording:
+		case ARDOUR::Recording:
 			return Recording;
 	}
 }
