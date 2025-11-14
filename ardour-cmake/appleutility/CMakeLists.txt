@@ -1,4 +1,4 @@
-add_library(appleutility
+add_library(appleutility SHARED
 	${L}/appleutility/CoreAudio/PublicUtility/AUOutputBL.cpp
 	${L}/appleutility/CoreAudio/PublicUtility/AUParamInfo.cpp
 	${L}/appleutility/CoreAudio/PublicUtility/CAAudioChannelLayout.cpp
@@ -21,7 +21,7 @@ target_include_directories(appleutility PUBLIC
 )
 
 target_link_libraries(appleutility PUBLIC
-#	"$<LINK_LIBRARY:FRAMEWORK,AudioToolbox>"
+	"$<LINK_LIBRARY:FRAMEWORK,AudioToolbox>"
 	"$<LINK_LIBRARY:FRAMEWORK,CoreServices>"
 	"$<LINK_LIBRARY:FRAMEWORK,CoreAudio>"
 )

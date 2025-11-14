@@ -1,4 +1,4 @@
-add_library(temporal
+add_library(temporal SHARED
 	${L}/temporal/bbt_time.cc
 	${L}/temporal/beats.cc
 	${L}/temporal/debug.cc

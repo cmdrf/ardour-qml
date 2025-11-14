@@ -5,7 +5,7 @@ add_custom_command(
 
 configure_file(libpbd-config.h.in libpbd-config.h)
 
-add_library(pbd
+add_library(pbd SHARED
 	${L}/pbd/base_ui.cc
 	${L}/pbd/basename.cc
 #	${L}/pbd/boost_debug.cc
@@ -106,4 +106,7 @@ target_include_directories(pbd PRIVATE
 
 target_link_libraries(pbd PUBLIC
 	PkgConfig::GLIB2
+	LibArchive::LibArchive
+	CURL::libcurl
+	LibXml2::LibXml2
 )

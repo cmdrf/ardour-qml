@@ -53,7 +53,7 @@ endif()
 
 configure_file(revision.cc.in revision.cc)
 
-add_library(ardourlib
+add_library(ardourlib SHARED
 	${CMAKE_CURRENT_BINARY_DIR}/revision.cc
 
 #    ${A}/aarch64_neon_functions.cc
@@ -167,7 +167,7 @@ add_library(ardourlib
     ${A}/latent.cc
     ${A}/legatize.cc
     ${A}/library.cc
-	${A}/linux_vst_support.cc
+#	${A}/linux_vst_support.cc
     ${A}/location.cc
     ${A}/location_importer.cc
     ${A}/ltc_file_reader.cc
@@ -179,7 +179,7 @@ add_library(ardourlib
     ${A}/lufs_meter.cc
     ${A}/lv2_evbuf.cc
     ${A}/lv2_plugin.cc
-    ${A}/lxvst_plugin.cc
+#    ${A}/lxvst_plugin.cc
 #    ${A}/mac_vst_plugin.cc
 #    ${A}/mac_vst_support.cc
     ${A}/meter.cc
@@ -369,14 +369,11 @@ target_include_directories(ardourlib PUBLIC
     ${L}/ardour
     ${L}/ctrl-interface/control_protocol
     ${L}/libltc/ltc/
-#    ${L}
+	${L}
 #    ${L}/vst3
 )
 
 target_link_libraries(ardourlib PUBLIC
-	CURL::libcurl
-    LibXml2::LibXml2
-    LibArchive::LibArchive
     PkgConfig::GLIB2
     PkgConfig::LTC
     PkgConfig::SNDFILE

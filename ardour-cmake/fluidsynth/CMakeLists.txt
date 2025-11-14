@@ -1,4 +1,4 @@
-add_library(fluidsynth
+add_library(fluidsynth STATIC
 	${L}/fluidsynth/src/fluid_adsr_env.c
 	${L}/fluidsynth/src/fluid_adsr_env.h
 	${L}/fluidsynth/src/fluid_chan.c
