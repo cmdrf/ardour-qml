@@ -18,7 +18,7 @@ ApplicationWindow {
 
         Button {
             text: "Create session"
-            onClicked: ardour.createSession("/tmp", "hallo", 48000)
+            onClicked: ardour.createSession("/tmp/lala", "hallo", 48000)
         }
 
         Button {

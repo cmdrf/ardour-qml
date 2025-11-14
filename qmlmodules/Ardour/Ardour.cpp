@@ -4,10 +4,92 @@
 #include <ardour/audio_backend.h>
 #include <ardour/filename_extensions.h>
 #include <ardour/session.h>
+#include <ardour/session_event.h>
+#include <pbd/receiver.h>
+#include <pbd/transmitter.h>
+#include <pbd/event_loop.h>
 
 #include <QCoreApplication>
 #include <QtEnvironmentVariables>
 #include <glibmm.h>
+
+#include <functional>
+#include <string>
+
+class LuaReceiver : public Receiver
+{
+protected:
+	void receive (Transmitter::Channel chn, const char* str) final
+	{
+		const char* prefix = "";
+
+		switch (chn)
+		{
+			case Transmitter::Debug:
+				qDebug() << str;
+				return;
+			case Transmitter::Info:
+				qInfo() << str;
+				return;
+			case Transmitter::Warning:
+				qWarning() << str;
+				break;
+			case Transmitter::Error:
+				qCritical() << str;
+				break;
+			case Transmitter::Fatal:
+				qFatal() << str;
+				break;
+			case Transmitter::Throw:
+				/* this isn't supposed to happen */
+				QCoreApplication::exit(1);
+		}
+
+		if (chn == Transmitter::Fatal)
+		{
+			QCoreApplication::exit (9);
+		}
+	}
+};
+
+class MyEventLoop : public sigc::trackable, public PBD::EventLoop
+{
+public:
+	MyEventLoop() : EventLoop (std::string("asd"))
+	{
+		run_loop_thread = Glib::Threads::Thread::self ();
+	}
+
+	bool call_slot (InvalidationRecord* ir, const std::function<void ()>& f)
+	{
+		if (Glib::Threads::Thread::self () == run_loop_thread)
+		{
+			qInfo() << string_compose ("%1/%2 direct dispatch of call slot via functor @ %3, invalidation %4\n", event_loop_name (), pthread_name (), &f, ir);
+			f ();
+		}
+		else
+		{
+			qInfo() << string_compose ("%1/%2 queue call-slot using functor @ %3, invalidation %4\n", event_loop_name (), pthread_name (), &f, ir);
+			//qAssert (!ir);
+			f (); // XXX TODO, queue and process during run ()
+		}
+		return true;
+	}
+
+	void run ()
+	{
+		; // TODO process Events, if any
+	}
+
+	Glib::Threads::RWLock& slot_invalidation_rwlock ()
+	{
+		return request_buffer_map_lock;
+	}
+
+private:
+	Glib::Threads::Thread* run_loop_thread;
+	Glib::Threads::RWLock  request_buffer_map_lock;
+};
 
 static bool prepareEngine()
 {
@@ -70,6 +152,17 @@ Ardour::Ardour(QObject *parent)
 	{
 		QCoreApplication::exit(EXIT_FAILURE);
 	}
+
+	static LuaReceiver lua_receiver;
+	static MyEventLoop eventLoop;
+
+	PBD::EventLoop::set_event_loop_for_thread (&eventLoop);
+	ARDOUR::SessionEvent::create_per_thread_pool ("lua", 4096);
+
+
+	lua_receiver.listen_to (PBD::warning);
+	lua_receiver.listen_to (PBD::error);
+	lua_receiver.listen_to (PBD::fatal);
 }
 
 Session* Ardour::session() const
