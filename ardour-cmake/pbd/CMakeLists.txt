@@ -82,6 +82,10 @@ add_library(pbd
 
 if(APPLE)
 	target_sources(pbd PUBLIC ${L}/pbd/cocoa_open_uri.mm)
+
+	target_link_libraries(pbd PUBLIC
+		"$<LINK_LIBRARY:FRAMEWORK,Cocoa>"
+	)
 endif()
 
 target_include_directories(pbd PUBLIC
