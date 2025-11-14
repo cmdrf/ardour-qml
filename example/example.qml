@@ -4,26 +4,26 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 import Ardour
 
-Window {
+ApplicationWindow {
     width: 640
     height: 400
     visible: true
     title: qsTr("Example Project")
 
-    SessionControls {
-        id: controls
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.margins: 20
-        width: 100
-        height: 100
+    Ardour {
+        id: ardour
     }
-    Session {
-        id: rect
-        anchors.left: controls.right
-        anchors.top: parent.top
-        anchors.margins: 20
-        width: 100
-        height: 100
+
+    GridLayout {
+
+        Button {
+            text: "Create session"
+            onClicked: ardour.createSession("/tmp", "hallo", 48000)
+        }
+
+        Button {
+            text: "Play"
+            onClicked: ardour.session.requestRoll()
+        }
     }
 }

@@ -10,11 +10,6 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    if (!ARDOUR::init (true, NULL, true))
-    {
-        return EXIT_FAILURE;
-    }
-
     QQmlApplicationEngine engine;
     // The first subfolder is the libraryName followed by the regular
     // folder structure: LibraryName/Subfolder

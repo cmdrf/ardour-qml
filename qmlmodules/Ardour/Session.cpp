@@ -1,25 +1,77 @@
 #include "Session.h"
+#include "QtBridgeUi.h"
 
-#include <QPainter>
+#include <ardour/session.h>
 
-Session::Session(QQuickItem *parent)
-    : QQuickPaintedItem(parent)
+Session::Session(QObject* parent, ARDOUR::Session* session) :
+	QObject(parent),
+	m_session(session),
+	m_transportSpeed(session->transport_speed()),
+	m_playLoop(session->get_play_loop())
+
 {
-    // By default, QQuickItem does not draw anything. If you subclass
-    // QQuickItem to create a visual item, you will need to uncomment the
-    // following line and re-implement updatePaintNode()
-
-    // setFlag(ItemHasContents, true);
-}
-
-void Session::paint(QPainter *painter)
-{
-    QPen pen(QColorConstants::Red, 2);
-    QBrush brush(QColorConstants::Red);
-
-    painter->setPen(pen);
-    painter->setBrush(brush);
-    painter->drawRect(0, 0, 100, 100);
+	QtBridgeUi::instance().connect(m_session->DirtyChanged, this, SIGNAL(dirty()));
+	QtBridgeUi::instance().connect(m_session->RecordStateChanged, this, SIGNAL(recordStateChanged()));
+	QtBridgeUi::instance().connect(m_session->TransportStateChange, this, SLOT(transportStateChange()));
 }
 
 Session::~Session() {}
+
+bool Session::dirty() const
+{
+	return m_session->dirty();
+}
+
+Session::RecordState Session::recordState() const
+{
+	switch(m_session->record_status())
+	{
+		case ARDOUR::Session::Disabled:
+			return Disabled;
+		case ARDOUR::Session::Enabled:
+			return Enabled;
+		case ARDOUR::Session::Recording:
+			return Recording;
+	}
+}
+
+void Session::maybeEnableRecord()
+{
+	m_session->maybe_enable_record();
+}
+
+void Session::disableRecord()
+{
+	m_session->disable_record(false);
+}
+
+void Session::requestRoll()
+{
+	m_session->request_roll();
+}
+
+void Session::requestStop()
+{
+	m_session->request_stop();
+}
+
+void Session::transportStateChange()
+{
+	float transportSpeed = m_session->transport_speed();
+	if(!qFuzzyCompare(transportSpeed, m_transportSpeed))
+	{
+		m_transportSpeed = transportSpeed;
+		Q_EMIT transportSpeedChanged();
+	}
+
+	bool playLoop = m_session->get_play_loop();
+	if( playLoop != m_playLoop)
+	{
+		m_playLoop = playLoop;
+		Q_EMIT playLoopChanged();
+	}
+}
+
+
+
+

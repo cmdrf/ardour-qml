@@ -1,17 +1,74 @@
 #ifndef SESSION_H
 #define SESSION_H
 
-#include <QtQuick/QQuickPaintedItem>
+#include <QObject>
+#include <QtQmlIntegration>
 
-class Session : public QQuickPaintedItem
+namespace ARDOUR
+{
+class Session;
+}
+
+class Session : public QObject
 {
     Q_OBJECT
-    QML_ELEMENT
+	QML_ANONYMOUS
     Q_DISABLE_COPY(Session)
+
+	Q_PROPERTY(bool dirty READ dirty NOTIFY dirtyChanged FINAL)
+	Q_PROPERTY(RecordState recordState READ recordState NOTIFY recordStateChanged FINAL)
+
+	/** 0 if stopped. */
+	Q_PROPERTY(float transportSpeed READ transportSpeed NOTIFY transportSpeedChanged FINAL)
+
+	Q_PROPERTY(bool playLoop READ playLoop NOTIFY playLoopChanged FINAL)
+
 public:
-    explicit Session(QQuickItem *parent = nullptr);
-    void paint(QPainter *painter) override;
+	enum RecordState
+	{
+		Disabled,
+		Enabled,
+		Recording
+	};
+	Q_ENUM(RecordState);
+
+	explicit Session(QObject* parent, ARDOUR::Session* session);
     ~Session() override;
+
+	bool dirty() const;
+
+	RecordState recordState() const;
+
+	float transportSpeed() const {return m_transportSpeed;}
+	bool playLoop() const {return m_playLoop;}
+
+public Q_SLOTS:
+/*
+	void newAudioTrack (int input_channels, int output_channels, RouteGroup* route_group,
+								   uint32_t how_many, string name_template, PresentationInfo::order_t order,
+								   TrackMode mode, bool input_auto_connect,
+								   bool trigger_visibility);
+*/
+	void maybeEnableRecord();
+	void disableRecord();
+	void requestRoll(); // Play
+	void requestStop();
+
+Q_SIGNALS:
+	void dirtyChanged();
+	void recordStateChanged();
+	void transportSpeedChanged();
+
+	void playLoopChanged();
+
+private Q_SLOTS:
+	void transportStateChange();
+
+private:
+	ARDOUR::Session* m_session;
+	RecordState m_recordState;
+	float m_transportSpeed;
+	bool m_playLoop;
 };
 
 #endif // SESSION_H

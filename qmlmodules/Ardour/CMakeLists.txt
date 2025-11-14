@@ -4,6 +4,8 @@ qt_add_qml_module(Ardour
     VERSION 1.0
     QML_FILES SessionControls.qml
     SOURCES Session.cpp Session.h
+	SOURCES QtBridgeUi.h QtBridgeUi.cpp
+	SOURCES Ardour.h Ardour.cpp
 )
 
 set_target_properties(Ardour PROPERTIES
@@ -15,7 +17,9 @@ set_target_properties(Ardour PROPERTIES
 )
 
 target_compile_definitions(Ardour
-    PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
+	PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
+	QT_NO_KEYWORDS
+)
 target_link_libraries(Ardour PRIVATE
     Qt6::Quick
     ardourlib
