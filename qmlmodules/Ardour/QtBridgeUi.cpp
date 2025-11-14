@@ -26,10 +26,20 @@ QtBridgeUi& QtBridgeUi::instance()
 void QtBridgeUi::connect(PBD::Signal<void()>& signal, QObject* receiver, const char* method)
 {
 	QPointer<QObject> receiverPtr(receiver);
-	int methodIndex = receiver->metaObject()->indexOfMethod(method);
+	int methodIndex = -1;
+	if(method[0] == '1')
+		methodIndex = receiver->metaObject()->indexOfSlot(method + 1);
+	else if(method[0] == '2')
+		methodIndex = receiver->metaObject()->indexOfSignal(method + 1);
+	else
+	{
+		qWarning() << "Method" << method << "is not a signal nor a slot.";
+		return;
+	}
+
 	if(methodIndex < 0)
 	{
-		qWarning() << "Method" << method << "not found.";
+		qWarning() << "Method" << (method+1) << "not found.";
 		return;
 	}
 

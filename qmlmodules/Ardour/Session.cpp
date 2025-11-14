@@ -10,7 +10,7 @@ Session::Session(QObject* parent, ARDOUR::Session* session) :
 	m_playLoop(session->get_play_loop())
 
 {
-	QtBridgeUi::instance().connect(m_session->DirtyChanged, this, SIGNAL(dirty()));
+	QtBridgeUi::instance().connect(m_session->DirtyChanged, this, SIGNAL(dirtyChanged()));
 	QtBridgeUi::instance().connect(m_session->RecordStateChanged, this, SIGNAL(recordStateChanged()));
 	QtBridgeUi::instance().connect(m_session->TransportStateChange, this, SLOT(transportStateChange()));
 }
