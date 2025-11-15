@@ -6,6 +6,8 @@ qt_add_qml_module(Ardour
     SOURCES Session.cpp Session.h
 	SOURCES QtBridgeUi.h QtBridgeUi.cpp
 	SOURCES Ardour.h Ardour.cpp
+	SOURCES Route.h Route.cpp
+	SOURCES RouteModel.h RouteModel.cpp
 )
 
 set_target_properties(Ardour PROPERTIES

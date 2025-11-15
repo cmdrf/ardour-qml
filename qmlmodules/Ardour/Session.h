@@ -1,6 +1,8 @@
 #ifndef SESSION_H
 #define SESSION_H
 
+#include "RouteModel.h"
+
 #include <QObject>
 #include <QtQmlIntegration>
 
@@ -23,6 +25,8 @@ class Session : public QObject
 
 	Q_PROPERTY(bool playLoop READ playLoop NOTIFY playLoopChanged FINAL)
 
+	Q_PROPERTY(RouteModel* routes READ routes FINAL)
+
 public:
 	enum RecordState
 	{
@@ -42,6 +46,8 @@ public:
 	float transportSpeed() const {return m_transportSpeed;}
 	bool playLoop() const {return m_playLoop;}
 
+	RouteModel* routes() {return &m_routes;}
+
 public Q_SLOTS:
 /*
 	void newAudioTrack (int input_channels, int output_channels, RouteGroup* route_group,
@@ -58,7 +64,6 @@ Q_SIGNALS:
 	void dirtyChanged();
 	void recordStateChanged();
 	void transportSpeedChanged();
-
 	void playLoopChanged();
 
 private Q_SLOTS:
@@ -69,6 +74,7 @@ private:
 	RecordState m_recordState;
 	float m_transportSpeed;
 	bool m_playLoop;
+	RouteModel m_routes;
 };
 
 #endif // SESSION_H
