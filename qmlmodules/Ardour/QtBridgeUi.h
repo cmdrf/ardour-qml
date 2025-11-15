@@ -7,7 +7,6 @@
 
 #include <pbd/abstract_ui.h>
 
-#include <functional>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -44,19 +43,23 @@ struct memfn_traits<R (C::*)(A...) const>
 };
 
 // helper: call member function pointer with a tuple, using only first N elements
+// NOTE: using direct pointer-to-member invocation to avoid std::invoke SFINAE issues
+// and take the tuple as an lvalue so std::get yields lvalues that can bind to non-const T& parameters.
 template<typename MemFn, typename ReceiverPtr, typename Tuple, std::size_t... I>
-inline void call_member_with_indices(MemFn memfn, ReceiverPtr receiver, Tuple &&t, std::index_sequence<I...>)
+inline void call_member_with_indices(MemFn memfn, ReceiverPtr receiver, Tuple &t, std::index_sequence<I...>)
 {
-	// std::invoke will accept a member function pointer and an object pointer as first parameter
-	std::invoke(memfn, static_cast<typename memfn_traits<MemFn>::class_type*>(receiver), std::get<I>(std::forward<Tuple>(t))...);
+	using class_type = typename memfn_traits<MemFn>::class_type;
+	class_type *obj = static_cast<class_type*>(receiver);
+	// direct pointer-to-member invocation avoids std::invoke SFINAE issues with reference params:
+	(obj->*memfn)(std::get<I>(t)...);
 }
 
 // general entry to call a member pointer using first N args of tuple
 template<std::size_t N, typename MemFn, typename ReceiverPtr, typename Tuple>
-inline void call_member_take_first_n(MemFn memfn, ReceiverPtr receiver, Tuple &&t)
+inline void call_member_take_first_n(MemFn memfn, ReceiverPtr receiver, Tuple &t)
 {
-	call_member_with_indices<MemFn, ReceiverPtr>(
-		memfn, receiver, std::forward<Tuple>(t),
+	call_member_with_indices<MemFn, ReceiverPtr, Tuple>(
+		memfn, receiver, t,
 		std::make_index_sequence<N>{}
 	);
 }
@@ -80,18 +83,13 @@ public:
 
 	static QtBridgeUi& instance();
 
-	void connect(PBD::Signal<void ()>& signal, QObject *receiver, const char *method);
-
 	/// Primary connect template.
 	/** - Signal signature: R_sig(SignalArgs...)
 		- Receiver must be pointer to QObject (e.g. MyWidget*).
 		- Slot must be a member function pointer: Ret (ReceiverType::*)(SlotArgs...) or const variant.
 
 		@returns std::shared_ptr<PBD::ScopedConnection> so caller can keep it if needed. */
-	template<typename R_sig, typename... SignalArgs, typename Receiver, typename SlotMemFn,
-			// SFINAE: this template only participates if SlotMemFn is a member function pointer
-			typename = typename std::enable_if<std::is_member_function_pointer<SlotMemFn>::value>::type
-	>
+	template<typename R_sig, typename... SignalArgs, typename Receiver, typename SlotMemFn>
 	std::shared_ptr<PBD::ScopedConnection>
 	connect(PBD::Signal<R_sig(SignalArgs...)> &signal, Receiver *receiver, SlotMemFn slot_memfn)
 	{
@@ -119,23 +117,25 @@ public:
 		// we capture a copy of the arguments into a tuple and then post a queued functor to the receiver's thread
 		signal.connect(*conn, MISSING_INVALIDATOR,
 			[receiverPtr, slot_memfn](SignalArgs... args) mutable {
-				// if receiver was already deleted we can return early (but we still want to be RT-safe).
-				// capture args by value into a tuple (decay-copy)
+				// capture args by value into a tuple (decay-copy) for safe queued execution
 				auto argsTuple = std::make_tuple(std::forward<SignalArgs>(args)...);
 
 				// build the task that will be executed in receiver's thread
-				auto task = [receiverPtr, slot_memfn, argsTuple = std::move(argsTuple)]() mutable {
-					Receiver *r = receiverPtr.data();
-					if (!r)
-						return; // receiver gone
-					// call the member pointer using only the first 'slot_arity' elements of argsTuple
-					PBD_QTBRIDGE::call_member_take_first_n<slot_arity, SlotMemFn, Receiver*, decltype(argsTuple)>(
-						slot_memfn, static_cast<Receiver*>(r), std::move(argsTuple));
+				auto task = [receiverPtr, slot_memfn, argsTuple]() mutable {
+				Receiver *r = receiverPtr.data();
+				if (!r)
+					return; // receiver gone
+
+				// IMPORTANT: pass the tuple as an lvalue (argsTuple) so that std::get returns lvalue references
+				// which can bind to non-const lvalue reference parameters expected by some slots.
+				// (Do NOT std::move(argsTuple) here.)
+				PBD_QTBRIDGE::call_member_take_first_n<slot_arity, SlotMemFn, Receiver*, decltype(argsTuple)>(
+					slot_memfn, static_cast<Receiver*>(r), argsTuple);
 				};
 
 				// Post to receiver's thread as queued invocation.
 				if (receiverPtr)
-					QMetaObject::invokeMethod(receiverPtr, std::move(task), Qt::QueuedConnection);
+				QMetaObject::invokeMethod(receiverPtr, std::move(task), Qt::QueuedConnection);
 			},
 			this
 		);
@@ -147,7 +147,6 @@ public:
 
 		return conn;
 	}
-
 
 protected:
 	void thread_init();

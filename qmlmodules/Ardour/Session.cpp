@@ -11,9 +11,9 @@ Session::Session(QObject* parent, ARDOUR::Session* session) :
 
 {
 	QtBridgeUi& b = QtBridgeUi::instance();
-	b.connect(m_session->DirtyChanged, this, SIGNAL(dirtyChanged()));
-	b.connect(m_session->RecordStateChanged, this, SIGNAL(recordStateChanged()));
-	b.connect(m_session->TransportStateChange, this, SLOT(transportStateChange()));
+	b.connect(m_session->DirtyChanged, this, &Session::dirtyChanged);
+	b.connect(m_session->RecordStateChanged, this, &Session::recordStateChanged);
+	b.connect(m_session->TransportStateChange, this, &Session::transportStateChange);
 	//b.connect(m_session->RouteAdded, &m_routes, &RouteModel::addRoutes);
 }
 

@@ -9,7 +9,7 @@ Route::Route(QObject *parent, std::shared_ptr<ARDOUR::Route> route) :
 
 	b.connect(route->DropReferences, this, &QObject::deleteLater);
 
-	b.connect(route->active_changed, this, SIGNAL(activeChanged));
+	b.connect(route->active_changed, this, &Route::activeChanged);
 
 	b.connect(route->mute_control()->Changed, this, &Route::mutedChanged);
 	b.connect(route->solo_control()->Changed, this, &Route::soloedChanged);
