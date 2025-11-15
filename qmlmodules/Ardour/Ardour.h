@@ -15,11 +15,13 @@ class Ardour : public QObject
 
 public:
 	explicit Ardour(QObject *parent = nullptr);
+	~Ardour();
 
 	Session* session() const;
 
 	Q_INVOKABLE bool createSession(const QString& dir, const QString& snapshotName, uint32_t sampleRate);
-	Q_INVOKABLE bool loadSession(const QString& dir, const QString& snapshotName);
+	Q_INVOKABLE bool loadSession(const QString& dir, const QString& snapshotName = QString());
+	Q_INVOKABLE bool loadSession(const QUrl& ardourFile);
 	Q_INVOKABLE void closeSession();
 
 Q_SIGNALS:

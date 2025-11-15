@@ -1,5 +1,6 @@
 
 #include "Ardour.h"
+#include "pbd/basename.h"
 
 #include <ardour/audio_backend.h>
 #include <ardour/filename_extensions.h>
@@ -165,6 +166,13 @@ Ardour::Ardour(QObject *parent)
 	lua_receiver.listen_to (PBD::fatal);
 }
 
+Ardour::~Ardour()
+{
+	closeSession();
+	ARDOUR::AudioEngine::instance ()->stop ();
+	ARDOUR::cleanup ();
+}
+
 Session* Ardour::session() const
 {
 	return m_session;
@@ -199,7 +207,50 @@ bool Ardour::createSession(const QString& dir, const QString& snapshotName, uint
 
 bool Ardour::loadSession(const QString& dir, const QString& snapshotName)
 {
+	if(!prepareEngine ())
+		return false;
 
+	std::string state = snapshotName.toStdString();
+	std::string dirStr = dir.toStdString();
+	if (state.empty ())
+		state = ARDOUR::Session::get_snapshot_from_instant (dir.toStdString());
+
+	if (state.empty ())
+		state = PBD::basename_nosuffix (dirStr);
+
+	float sr;
+	ARDOUR::SampleFormat sf;
+	std::string v;
+	std::string s = Glib::build_filename (dirStr, state + ARDOUR::statefile_suffix);
+	if (!Glib::file_test (dirStr, Glib::FILE_TEST_EXISTS))
+	{
+		qWarning() << "Cannot find session: " << s << "\n";
+		return 0;
+	}
+
+	if(ARDOUR::Session::get_info_from_path (s, sr, sf, v) != 0)
+	{
+		qWarning() << "Cannot get samplerate from session.\n";
+		return false;
+	}
+
+	if(!startEngine(sr))
+		return false;
+
+	ARDOUR::AudioEngine* engine  = ARDOUR::AudioEngine::instance ();
+	ARDOUR::Session*     session = new ARDOUR::Session (*engine, dirStr, state);
+	m_session = new Session(this, session);
+	Q_EMIT sessionChanged();
+	return true;
+}
+
+bool Ardour::loadSession(const QUrl& ardourFile)
+{
+	QString file = ardourFile.toLocalFile();
+	// Split into directory and filename:
+	QString dir = QFileInfo(file).absolutePath();
+	QString snapshotName = QFileInfo(file).completeBaseName();
+	return loadSession(dir, snapshotName);
 }
 
 void Ardour::closeSession()
