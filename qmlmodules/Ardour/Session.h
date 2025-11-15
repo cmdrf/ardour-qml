@@ -25,7 +25,7 @@ class Session : public QObject
 
 	Q_PROPERTY(bool playLoop READ playLoop NOTIFY playLoopChanged FINAL)
 
-	Q_PROPERTY(RouteModel* routes READ routes FINAL)
+	Q_PROPERTY(RouteModel* routes READ routes CONSTANT FINAL)
 
 public:
 	enum RecordState

@@ -14,7 +14,11 @@ Session::Session(QObject* parent, ARDOUR::Session* session) :
 	b.connect(m_session->DirtyChanged, this, &Session::dirtyChanged);
 	b.connect(m_session->RecordStateChanged, this, &Session::recordStateChanged);
 	b.connect(m_session->TransportStateChange, this, &Session::transportStateChange);
-	//b.connect(m_session->RouteAdded, &m_routes, &RouteModel::addRoutes);
+
+	// Route model:
+	ARDOUR::RouteList routes = *m_session->get_routes();
+	m_routes.addRoutes(routes); // Intitial populate
+	b.connect(m_session->RouteAdded, &m_routes, &RouteModel::addRoutes);
 }
 
 Session::~Session() {}

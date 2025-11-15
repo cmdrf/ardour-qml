@@ -22,6 +22,9 @@ class Route : public QObject
 	Q_PROPERTY(bool canSolo READ canSolo FINAL)
 	Q_PROPERTY(bool canMonitor READ canMonitor FINAL)
 
+	/** Numbers >0 are tracks, <0 are busses. 0 is reserved. */
+	Q_PROPERTY(qint64 trackNumber READ trackNumber WRITE setTrackNumber NOTIFY trackNumberChanged FINAL)
+
 public:
 	explicit Route(QObject* parent, std::shared_ptr<ARDOUR::Route> route);
 
@@ -34,8 +37,10 @@ public:
 	bool isSafe() const {return m_route->is_safe();}
 	bool canSolo() const {return m_route->can_solo();}
 	bool canMonitor() const {return m_route->can_monitor();}
+	qint64 trackNumber() const {return m_route->track_number();}
 
 	void setActive(bool active) {m_route->set_active(active, nullptr);}
+	void setTrackNumber(qint64 trackNumber) {m_route->set_track_number(trackNumber);}
 
 Q_SIGNALS:
 	void activeChanged();
@@ -43,6 +48,7 @@ Q_SIGNALS:
 	void soloedChanged();
 	void soloIsolatedChanged();
 	void isSafeChanged();
+	void trackNumberChanged();
 
 private:
 	std::shared_ptr<ARDOUR::Route> m_route;
