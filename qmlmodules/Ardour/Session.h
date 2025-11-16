@@ -26,6 +26,7 @@ class Session : public QObject
 	Q_PROPERTY(bool playLoop READ playLoop NOTIFY playLoopChanged FINAL)
 
 	Q_PROPERTY(RouteModel* routes READ routes CONSTANT FINAL)
+	Q_PROPERTY(QAbstractItemModel* tracks READ tracks CONSTANT FINAL)
 
 public:
 	enum RecordState
@@ -47,6 +48,7 @@ public:
 	bool playLoop() const {return m_playLoop;}
 
 	RouteModel* routes() {return &m_routes;}
+	QAbstractItemModel* tracks() {return &m_tracks;}
 
 public Q_SLOTS:
 /*
@@ -75,6 +77,7 @@ private:
 	float m_transportSpeed;
 	bool m_playLoop;
 	RouteModel m_routes;
+	QSortFilterProxyModel m_tracks;
 };
 
 #endif // SESSION_H

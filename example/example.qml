@@ -10,6 +10,38 @@ ApplicationWindow {
     visible: true
     title: qsTr("Example Project")
 
+    header: ToolBar {
+        RowLayout {
+            anchors.fill: parent
+            ToolButton {
+                text: "New session"
+                onClicked: ardour.createSession("/tmp/lala", "hallo", 48000)
+            }
+
+            ToolButton {
+                text: "Open session"
+                onClicked: openDialog.open()
+            }
+
+            ToolButton {
+                icon.name: "media-playback-start"
+                icon.color: ardour.session && ardour.session.transportSpeed === 0.0 ? "black" : "green"
+                enabled: ardour.session != null
+                onClicked: ardour.session.requestRoll()
+            }
+
+            ToolButton {
+                icon.name: "media-playback-stop"
+                enabled: ardour.session != null
+                onClicked: ardour.session.requestStop()
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
+        }
+    }
+
     Ardour {
         id: ardour
     }
@@ -20,42 +52,27 @@ ApplicationWindow {
         onAccepted: ardour.loadSession(openDialog.selectedFile)
     }
 
-    GridLayout {
-        Button {
-            text: "New session"
-            onClicked: ardour.createSession("/tmp/lala", "hallo", 48000)
-        }
+    ListView {
+        anchors.fill: parent
+        model: ardour.session ? ardour.session.tracks : null
+        delegate: Rectangle {
+            required property var route
+            required property int trackNumber
+            color: "lightgreen"
+            width: 1280
+            height: 40
+            Text {
+                text: trackNumber
+            }
 
-        Button {
-            text: "Open session"
-            onClicked: openDialog.open()
-        }
-
-        Button {
-            icon.name: "media-playback-start"
-            icon.color: ardour.session && ardour.session.transportSpeed === 0.0 ? "black" : "green"
-            enabled: ardour.session != null
-            onClicked: ardour.session.requestRoll()
-        }
-
-        Button {
-            icon.name: "media-playback-stop"
-            enabled: ardour.session != null
-            onClicked: ardour.session.requestStop()
-        }
-
-        ListView {
-            width: 100
-            height: 200
-            model: ardour.session ? ardour.session.routes : null
-            delegate: Rectangle {
-                required property var route
-                required property int trackNumber
-                color: "lightgreen"
-                width: 40
-                height: 40
-                Text {
-                    text: trackNumber
+            Repeater {
+                model: route.playlist
+                delegate: Rectangle {
+                    x: region.position.ticks / 1000
+                    height: 30
+                    width: region.length.ticks / 1000
+                    color: "blue"
+                    radius: 3
                 }
             }
         }

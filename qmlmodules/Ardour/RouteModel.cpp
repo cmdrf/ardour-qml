@@ -1,6 +1,6 @@
 #include "RouteModel.h"
 #include "Route.h"
-
+#include "Track.h"
 
 RouteModel::RouteModel(QObject *parent)
 	: QAbstractListModel{parent}
@@ -18,10 +18,18 @@ QVariant RouteModel::data(const QModelIndex& index, int role) const
 	if(!checkIndex(index, QAbstractItemModel::CheckIndexOption::IndexIsValid | QAbstractItemModel::CheckIndexOption::ParentIsInvalid))
 		return QVariant();
 
+	Route* r = m_routes.at(index.row());
 	if(role == RouteRole)
-		return QVariant::fromValue(m_routes.at(index.row()));
+	{
+		if(r->isTrack())
+			return QVariant::fromValue(static_cast<Track*>(r));
+		else
+			return QVariant::fromValue(r);
+	}
 	else if(role == TrackNumberRole)
-		return m_routes.at(index.row())->trackNumber();
+		return r->trackNumber();
+	else if(role == IsTrackRole)
+		return r->isTrack();
 	return QVariant();
 }
 
@@ -29,7 +37,8 @@ QHash<int, QByteArray> RouteModel::roleNames() const
 {
 	static const QHash<int, QByteArray> roles{
 		{RouteRole, "route"},
-		{TrackNumberRole, "trackNumber"}
+		{TrackNumberRole, "trackNumber"},
+		{IsTrackRole, "isTrack"}
 	};
 	return roles;
 }
@@ -39,7 +48,11 @@ void RouteModel::addRoutes(ARDOUR::RouteList& routes)
 	beginInsertRows(QModelIndex(), m_routes.size(), m_routes.size() + routes.size());
 	for(auto& route: routes)
 	{
-		Route* r = new Route(this, route);
+		Route* r = nullptr;
+		if(route->is_track())
+			r = new Track(this, std::dynamic_pointer_cast<ARDOUR::Track>(route));
+		else
+			r = new Route(this, route);
 		connect(r, &QObject::destroyed, this, &RouteModel::routeDestroyed);
 		connect(r, &Route::trackNumberChanged, this, &RouteModel::updateTrackNumber);
 		m_routes.append(r);

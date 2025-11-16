@@ -50,7 +50,7 @@ Q_SIGNALS:
 	void isSafeChanged();
 	void trackNumberChanged();
 
-private:
+protected:
 	std::shared_ptr<ARDOUR::Route> m_route;
 };
 

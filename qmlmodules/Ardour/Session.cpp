@@ -19,6 +19,11 @@ Session::Session(QObject* parent, ARDOUR::Session* session) :
 	ARDOUR::RouteList routes = *m_session->get_routes();
 	m_routes.addRoutes(routes); // Intitial populate
 	b.connect(m_session->RouteAdded, &m_routes, &RouteModel::addRoutes);
+
+	m_tracks.setSourceModel(&m_routes);
+	m_tracks.setFilterRole(RouteModel::IsTrackRole);
+	m_tracks.setFilterRegularExpression(QRegularExpression("^true$", QRegularExpression::CaseInsensitiveOption));
+	m_tracks.setSortRole(RouteModel::TrackNumberRole);
 }
 
 Session::~Session() {}

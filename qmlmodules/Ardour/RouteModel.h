@@ -14,7 +14,8 @@ public:
 	enum
 	{
 		RouteRole = Qt::UserRole,
-		TrackNumberRole
+		TrackNumberRole,
+		IsTrackRole
 	};
 
 	explicit RouteModel(QObject *parent = nullptr);
