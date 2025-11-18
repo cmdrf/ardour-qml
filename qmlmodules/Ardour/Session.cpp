@@ -1,8 +1,6 @@
 #include "Session.h"
 #include "QtBridgeUi.h"
 
-#include <ardour/session.h>
-
 Session::Session(QObject* parent, ARDOUR::Session* session) :
 	QObject(parent),
 	m_session(session),
@@ -14,6 +12,8 @@ Session::Session(QObject* parent, ARDOUR::Session* session) :
 	b.connect(m_session->DirtyChanged, this, &Session::dirtyChanged);
 	b.connect(m_session->RecordStateChanged, this, &Session::recordStateChanged);
 	b.connect(m_session->TransportStateChange, this, &Session::transportStateChange);
+	b.connect(m_session->PositionChanged, this, &Session::transportSampleChanged);
+	b.connect(m_session->Located, this, &Session::transportSampleChanged);
 
 	// Route model:
 	ARDOUR::RouteList routes = *m_session->get_routes();
@@ -24,6 +24,10 @@ Session::Session(QObject* parent, ARDOUR::Session* session) :
 	m_tracks.setFilterRole(RouteModel::IsTrackRole);
 	m_tracks.setFilterRegularExpression(QRegularExpression("^true$", QRegularExpression::CaseInsensitiveOption));
 	m_tracks.setSortRole(RouteModel::TrackNumberRole);
+
+	// Timer:
+	m_transportPositionQueryTimer.setInterval(100);
+	connect(&m_transportPositionQueryTimer, &QTimer::timeout, this, &Session::transportSampleChanged);
 }
 
 Session::~Session() {}
@@ -72,6 +76,11 @@ void Session::transportStateChange()
 	if(!qFuzzyCompare(transportSpeed, m_transportSpeed))
 	{
 		m_transportSpeed = transportSpeed;
+		if(transportSpeed == 0.0)
+			m_transportPositionQueryTimer.stop();
+		else
+			m_transportPositionQueryTimer.start();
+
 		Q_EMIT transportSpeedChanged();
 	}
 

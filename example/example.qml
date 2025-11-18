@@ -36,6 +36,10 @@ ApplicationWindow {
                 onClicked: ardour.session.requestStop()
             }
 
+            Label {
+                text: ardour.session.transportSample
+            }
+
             Item {
                 Layout.fillWidth: true
             }

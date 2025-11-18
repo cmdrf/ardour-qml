@@ -3,6 +3,8 @@
 
 #include "RouteModel.h"
 
+#include <ardour/session.h>
+
 #include <QObject>
 #include <QtQmlIntegration>
 
@@ -25,6 +27,8 @@ class Session : public QObject
 
 	Q_PROPERTY(bool playLoop READ playLoop NOTIFY playLoopChanged FINAL)
 
+	Q_PROPERTY(qint64 transportSample READ transportSample NOTIFY transportSampleChanged FINAL)
+
 	Q_PROPERTY(RouteModel* routes READ routes CONSTANT FINAL)
 	Q_PROPERTY(QAbstractItemModel* tracks READ tracks CONSTANT FINAL)
 
@@ -46,6 +50,7 @@ public:
 
 	float transportSpeed() const {return m_transportSpeed;}
 	bool playLoop() const {return m_playLoop;}
+	qint64 transportSample() const {return m_session->transport_sample();}
 
 	RouteModel* routes() {return &m_routes;}
 	QAbstractItemModel* tracks() {return &m_tracks;}
@@ -67,6 +72,7 @@ Q_SIGNALS:
 	void recordStateChanged();
 	void transportSpeedChanged();
 	void playLoopChanged();
+	void transportSampleChanged();
 
 private Q_SLOTS:
 	void transportStateChange();
@@ -78,6 +84,9 @@ private:
 	bool m_playLoop;
 	RouteModel m_routes;
 	QSortFilterProxyModel m_tracks;
+
+	/** Timer to regularly update the transport position during play. */
+	QTimer m_transportPositionQueryTimer;
 };
 
 #endif // SESSION_H
