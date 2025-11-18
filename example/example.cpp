@@ -1,10 +1,6 @@
-#include <ardour/ardour.h>
-
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QtQml/qqmlextensionplugin.h>
-
-Q_IMPORT_QML_PLUGIN(ArdourPlugin)
 
 int main(int argc, char *argv[])
 {

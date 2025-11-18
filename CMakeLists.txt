@@ -20,8 +20,6 @@ qt_add_qml_module(ExampleProject
     QML_FILES example/example.qml
 )
 target_link_libraries(ExampleProject PRIVATE
-    Qt6::Quick
-    Ardourplugin
-    ardourlib
+	Qt6::Quick
 )
 target_compile_definitions(ExampleProject PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
