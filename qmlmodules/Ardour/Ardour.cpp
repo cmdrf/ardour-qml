@@ -17,7 +17,7 @@
 #include <functional>
 #include <string>
 
-class LuaReceiver : public Receiver
+class LogReceiver : public Receiver
 {
 protected:
 	void receive (Transmitter::Channel chn, const char* str) final
@@ -154,16 +154,16 @@ Ardour::Ardour(QObject *parent)
 		QCoreApplication::exit(EXIT_FAILURE);
 	}
 
-	static LuaReceiver lua_receiver;
+	static LogReceiver logReceiver;
 	static MyEventLoop eventLoop;
 
 	PBD::EventLoop::set_event_loop_for_thread (&eventLoop);
 	ARDOUR::SessionEvent::create_per_thread_pool ("lua", 4096);
 
 
-	lua_receiver.listen_to (PBD::warning);
-	lua_receiver.listen_to (PBD::error);
-	lua_receiver.listen_to (PBD::fatal);
+	logReceiver.listen_to (PBD::warning);
+	logReceiver.listen_to (PBD::error);
+	logReceiver.listen_to (PBD::fatal);
 }
 
 Ardour::~Ardour()
