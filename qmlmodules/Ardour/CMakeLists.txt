@@ -1,5 +1,4 @@
-find_package(Qt6 REQUIRED COMPONENTS Core)
-find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick ShaderTools)
 
 #qt_add_library(Ardour SHARED)
 qt_add_qml_module(Ardour
@@ -21,6 +20,15 @@ qt_add_qml_module(Ardour
 	SOURCES TimePos.h
 	SOURCES TimeCount.h
 	SOURCES AudioRegion.h AudioRegion.cpp
+	SOURCES Waveform.h Waveform.cpp
+)
+
+qt6_add_shaders(Ardour "Ardour_shaders"
+	PREFIX
+		"/"
+	FILES
+		shaders/color.frag
+		shaders/color.vert
 )
 
 set_target_properties(Ardour PROPERTIES
@@ -37,8 +45,10 @@ target_compile_definitions(Ardour
 )
 target_link_libraries(Ardour PRIVATE
 	Qt6::Quick
+	Qt6::GuiPrivate
 	ardourlib
 )
+target_link_libraries(Ardour PRIVATE Qt6::Quick)
 
 target_include_directories(Ardour PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
