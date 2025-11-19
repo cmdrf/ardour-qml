@@ -21,7 +21,6 @@ class AudioRegion : public Region
 
 public:
 	explicit AudioRegion(QObject *parent, std::shared_ptr<ARDOUR::AudioRegion> audioRegion);
-	~AudioRegion();
 
 	std::shared_ptr<ARDOUR::AudioRegion> audioRegion() {return std::dynamic_pointer_cast<ARDOUR::AudioRegion>(m_stateful);}
 	const std::shared_ptr<ARDOUR::AudioRegion> audioRegion() const {return std::dynamic_pointer_cast<ARDOUR::AudioRegion>(m_stateful);}

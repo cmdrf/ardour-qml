@@ -1,5 +1,4 @@
 #include "ArdourPlugin.h"
-#include "WaveformImageProvider.h"
 
 
 ArdourPlugin::ArdourPlugin(QObject *parent)
@@ -11,5 +10,4 @@ ArdourPlugin::ArdourPlugin(QObject *parent)
 void ArdourPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 {
 	Q_UNUSED(uri);
-	engine->addImageProvider("waveform", new WaveformImageProvider);
 }

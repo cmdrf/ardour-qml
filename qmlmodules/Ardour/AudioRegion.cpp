@@ -1,7 +1,7 @@
 #include "AudioRegion.h"
 
 AudioRegion::AudioRegion(QObject *parent, std::shared_ptr<ARDOUR::AudioRegion> audioRegion) :
-	Region{parent, audioRegion},
+	Region{parent, audioRegion}
 {
 
 }
