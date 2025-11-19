@@ -1,4 +1,5 @@
 #include "Playlist.h"
+#include "AudioRegion.h"
 #include "QtBridgeUi.h"
 #include "Region.h"
 
@@ -45,7 +46,11 @@ void Playlist::setPlaylist(std::shared_ptr<ARDOUR::Playlist> playlist)
 	auto regionList = m_playlist->region_list();
 	for(const auto &region : *regionList)
 	{
-		Region* newRegion = new Region(this, region);
+		Region* newRegion = nullptr;
+		if(auto audioRegion = std::dynamic_pointer_cast<ARDOUR::AudioRegion>(region))
+			newRegion = new AudioRegion(this, audioRegion);
+		else
+			newRegion = new Region(this, region);
 		m_regions.append(newRegion);
 	}
 
@@ -64,8 +69,13 @@ QVariant Playlist::data(const QModelIndex& index, int role) const
 		return QVariant();
 
 	if(role == RegionRole)
-		return QVariant::fromValue(m_regions.at(index.row()));
-
+	{
+		Region* r = m_regions.at(index.row());
+		if(AudioRegion* ar = dynamic_cast<AudioRegion*>(r))
+			return QVariant::fromValue(ar);
+		else
+			return QVariant::fromValue(r);
+	}
 	return QVariant();
 }
 

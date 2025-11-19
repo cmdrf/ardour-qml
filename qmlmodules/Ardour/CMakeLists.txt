@@ -20,6 +20,7 @@ qt_add_qml_module(Ardour
 	SOURCES Stateful.h Stateful.cpp
 	SOURCES TimePos.h
 	SOURCES TimeCount.h
+	SOURCES AudioRegion.h AudioRegion.cpp
 )
 
 set_target_properties(Ardour PROPERTIES
