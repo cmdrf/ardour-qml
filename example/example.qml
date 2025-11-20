@@ -71,12 +71,17 @@ ApplicationWindow {
 
             Repeater {
                 model: route.playlist
-                delegate: Waveform {
+                delegate: Rectangle {
                     x: region.position.ticks / 1000
                     height: 30
                     width: region.length.ticks / 1000
-                    //color: "blue"
-                    //radius: 3
+                    color: "blue"
+                    radius: 3
+
+                    Waveform {
+                        anchors.fill: parent
+                        audioRegion: region
+                    }
                 }
             }
         }
