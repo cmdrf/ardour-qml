@@ -137,14 +137,14 @@ void WaveformRenderer::render(QRhiCommandBuffer* cb)
 		}
 
 		// Test:
-		float a = 0.0;
+/*		float a = 0.0;
 		for(auto& b : m_peaksUpdate)
 		{
 			b.min = a;
 			b.max = 1.0 - a;
 			a += 1.0 / m_peaksUpdate.size();
 		}
-
+*/
 		{
 			QRhiTextureSubresourceUploadDescription subUploadDesc(&m_peaksUpdate.front().min, m_peaksUpdate.size() * sizeof(ARDOUR::PeakData));
 			subUploadDesc.setDataStride(sizeof(ARDOUR::PeakData));
@@ -194,7 +194,7 @@ void Waveform::setAudioRegion(AudioRegion* newRegion)
 		const ARDOUR::samplecnt_t start = newRegion->audioRegion()->start_sample();
 		const ARDOUR::samplecnt_t length = newRegion->audioRegion()->length_samples();
 		m_peaksUpdate.resize(1024);
-		newRegion->audioRegion()->read_peaks(m_peaksUpdate.data(), m_peaksUpdate.length(), start, length);
+		newRegion->audioRegion()->read_peaks(m_peaksUpdate.data(), m_peaksUpdate.length(), start, length, 0, 64);
 	}
 	Q_EMIT audioRegionChanged();
 }

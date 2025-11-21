@@ -64,7 +64,7 @@ ApplicationWindow {
             required property int trackNumber
             color: "lightgreen"
             width: 1280
-            height: 40
+            height: 60
             Text {
                 text: trackNumber
             }
@@ -72,9 +72,9 @@ ApplicationWindow {
             Repeater {
                 model: route.playlist
                 delegate: Rectangle {
-                    x: region.position.ticks / 1000
-                    height: 30
-                    width: region.length.ticks / 1000
+                    x: region.position.ticks / 500
+                    height: 55
+                    width: region.length.ticks / 500
                     color: "blue"
                     radius: 3
 
