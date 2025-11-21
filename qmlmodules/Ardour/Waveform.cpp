@@ -12,6 +12,8 @@ public:
 	void render(QRhiCommandBuffer *cb) override;
 
 private:
+	void createPipeline(QRhiCommandBuffer* cb, QRhiResourceUpdateBatch *resourceUpdates);
+
 	QRhi *m_rhi = nullptr;
 	std::unique_ptr<QRhiBuffer> m_vbuf;
 	std::unique_ptr<QRhiBuffer> m_ubuf;
@@ -63,6 +65,55 @@ void WaveformRenderer::synchronize(QQuickRhiItem* rhiItem)
 	qSwap(m_peaksUpdate, item->m_peaksUpdate);
 }
 
+void WaveformRenderer::createPipeline(QRhiCommandBuffer* cb, QRhiResourceUpdateBatch *resourceUpdates)
+{
+	m_vbuf.reset(m_rhi->newBuffer(QRhiBuffer::Immutable, QRhiBuffer::VertexBuffer, sizeof(vertexData)));
+	m_vbuf->create();
+
+	m_ubuf.reset(m_rhi->newBuffer(QRhiBuffer::Dynamic, QRhiBuffer::UniformBuffer, 64));
+	m_ubuf->create();
+
+	m_peakMinTexture.reset(m_rhi->newTexture(QRhiTexture::R32F, QSize(1, 1)));
+	m_peakMinTexture->create();
+	m_peakMaxTexture.reset(m_rhi->newTexture(QRhiTexture::R32F, QSize(1, 1)));
+	m_peakMaxTexture->create();
+
+	m_peakMaxSampler.reset(m_rhi->newSampler(QRhiSampler::Linear, QRhiSampler::Linear, QRhiSampler::None,
+											 QRhiSampler::ClampToEdge, QRhiSampler::ClampToEdge));
+	m_peakMaxSampler->create();
+
+	m_srb.reset(m_rhi->newShaderResourceBindings());
+	m_srb->setBindings({
+		QRhiShaderResourceBinding::uniformBuffer(0, QRhiShaderResourceBinding::VertexStage, m_ubuf.get()),
+		QRhiShaderResourceBinding::sampledTexture(1, QRhiShaderResourceBinding::FragmentStage, m_peakMinTexture.get(), m_peakMaxSampler.get()),
+		QRhiShaderResourceBinding::sampledTexture(2, QRhiShaderResourceBinding::FragmentStage, m_peakMaxTexture.get(), m_peakMaxSampler.get())
+	});
+	m_srb->create();
+
+	m_pipeline.reset(m_rhi->newGraphicsPipeline());
+	m_pipeline->setShaderStages({
+		{ QRhiShaderStage::Vertex, getShader(QLatin1String(":/shaders/color.vert.qsb")) },
+		{ QRhiShaderStage::Fragment, getShader(QLatin1String(":/shaders/color.frag.qsb")) }
+	});
+	QRhiVertexInputLayout inputLayout;
+	inputLayout.setBindings({
+		{ 2 * sizeof(float) }
+	});
+	inputLayout.setAttributes({
+		{ 0, 0, QRhiVertexInputAttribute::Float2, 0 }
+	});
+	m_pipeline->setVertexInputLayout(inputLayout);
+	m_pipeline->setShaderResourceBindings(m_srb.get());
+	m_pipeline->setRenderPassDescriptor(renderTarget()->renderPassDescriptor());
+	m_pipeline->create();
+
+	resourceUpdates->uploadStaticBuffer(m_vbuf.get(), vertexData);
+	QImage dummyImage(1, 1, QImage::Format_RGBA8888);
+	dummyImage.fill(Qt::red);
+	resourceUpdates->uploadTexture(m_peakMaxTexture.get(), dummyImage);
+	cb->resourceUpdate(resourceUpdates);
+}
+
 void WaveformRenderer::initialize(QRhiCommandBuffer* cb)
 {
 	if (m_rhi != rhi())
@@ -73,58 +124,16 @@ void WaveformRenderer::initialize(QRhiCommandBuffer* cb)
 
 	if (!m_pipeline)
 	{
-		m_vbuf.reset(m_rhi->newBuffer(QRhiBuffer::Immutable, QRhiBuffer::VertexBuffer, sizeof(vertexData)));
-		m_vbuf->create();
 
-		m_ubuf.reset(m_rhi->newBuffer(QRhiBuffer::Dynamic, QRhiBuffer::UniformBuffer, 64));
-		m_ubuf->create();
-
-		m_peakMinTexture.reset(m_rhi->newTexture(QRhiTexture::R32F, QSize(1, 1)));
-		m_peakMinTexture->create();
-		m_peakMaxTexture.reset(m_rhi->newTexture(QRhiTexture::R32F, QSize(1, 1)));
-		m_peakMaxTexture->create();
-
-		m_peakMaxSampler.reset(m_rhi->newSampler(QRhiSampler::Linear, QRhiSampler::Linear, QRhiSampler::None,
-												 QRhiSampler::ClampToEdge, QRhiSampler::ClampToEdge));
-		m_peakMaxSampler->create();
-
-		m_srb.reset(m_rhi->newShaderResourceBindings());
-		m_srb->setBindings({
-			QRhiShaderResourceBinding::uniformBuffer(0, QRhiShaderResourceBinding::VertexStage, m_ubuf.get()),
-			QRhiShaderResourceBinding::sampledTexture(1, QRhiShaderResourceBinding::FragmentStage, m_peakMinTexture.get(), m_peakMaxSampler.get()),
-			QRhiShaderResourceBinding::sampledTexture(2, QRhiShaderResourceBinding::FragmentStage, m_peakMaxTexture.get(), m_peakMaxSampler.get())
-		});
-		m_srb->create();
-
-		m_pipeline.reset(m_rhi->newGraphicsPipeline());
-		m_pipeline->setShaderStages({
-			{ QRhiShaderStage::Vertex, getShader(QLatin1String(":/shaders/color.vert.qsb")) },
-			{ QRhiShaderStage::Fragment, getShader(QLatin1String(":/shaders/color.frag.qsb")) }
-		});
-		QRhiVertexInputLayout inputLayout;
-		inputLayout.setBindings({
-			{ 2 * sizeof(float) }
-		});
-		inputLayout.setAttributes({
-			{ 0, 0, QRhiVertexInputAttribute::Float2, 0 }
-		});
-		m_pipeline->setVertexInputLayout(inputLayout);
-		m_pipeline->setShaderResourceBindings(m_srb.get());
-		m_pipeline->setRenderPassDescriptor(renderTarget()->renderPassDescriptor());
-		m_pipeline->create();
-
-		QRhiResourceUpdateBatch *resourceUpdates = m_rhi->nextResourceUpdateBatch();
-		resourceUpdates->uploadStaticBuffer(m_vbuf.get(), vertexData);
-		QImage dummyImage(1, 1, QImage::Format_RGBA8888);
-		dummyImage.fill(Qt::red);
-		resourceUpdates->uploadTexture(m_peakMaxTexture.get(), dummyImage);
-		cb->resourceUpdate(resourceUpdates);
 	}
 }
 
 void WaveformRenderer::render(QRhiCommandBuffer* cb)
 {
 	QRhiResourceUpdateBatch *resourceUpdates = m_rhi->nextResourceUpdateBatch();
+	if(!m_pipeline)
+		createPipeline(cb, resourceUpdates);
+
 	if(!m_peaksUpdate.isEmpty())
 	{
 		QSize newSize(1, m_peaksUpdate.size());
