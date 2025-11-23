@@ -5,6 +5,7 @@
 
 #include <rhi/qrhi.h>
 #include <QQuickRhiItemRenderer>
+#include <QFutureWatcher>
 
 class AudioRegion;
 
@@ -12,15 +13,12 @@ class Waveform : public QQuickRhiItem
 {
 	Q_OBJECT
 	QML_NAMED_ELEMENT(Waveform)
-	Q_PROPERTY(float angle READ angle WRITE setAngle NOTIFY angleChanged)
 	Q_PROPERTY(AudioRegion* audioRegion READ audioRegion WRITE setAudioRegion NOTIFY audioRegionChanged FINAL)
 
 	friend class WaveformRenderer;
 public:
+	Waveform();
 	QQuickRhiItemRenderer *createRenderer() override;
-
-	float angle() const { return m_angle; }
-	void setAngle(float a);
 
 	AudioRegion* audioRegion() const {return m_region;}
 	void setAudioRegion(AudioRegion* newRegion);
@@ -29,10 +27,13 @@ Q_SIGNALS:
 	void angleChanged();
 	void audioRegionChanged();
 
+private Q_SLOTS:
+	void updatePeaks();
+
 private:
-	float m_angle = 0.0f;
 	AudioRegion* m_region = nullptr;
 	QList<ARDOUR::PeakData> m_peaksUpdate;
+	QFutureWatcher<QList<ARDOUR::PeakData>> m_peaksWatcher;
 };
 
 #endif // WAVEFORM_H

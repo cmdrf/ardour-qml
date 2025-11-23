@@ -3,6 +3,7 @@
 #include "ardour/types.h"
 
 #include <QFile>
+#include <QtConcurrentRun>
 
 class WaveformRenderer : public QQuickRhiItemRenderer
 {
@@ -22,7 +23,6 @@ private:
 	std::unique_ptr<QRhiSampler> m_peakMaxSampler;
 	std::unique_ptr<QRhiShaderResourceBindings> m_srb;
 	std::unique_ptr<QRhiGraphicsPipeline> m_pipeline;
-	float m_angle = 0.0f;
 	QList<ARDOUR::PeakData> m_peaksUpdate;
 };
 
@@ -42,25 +42,9 @@ static QShader getShader(const QString& name)
 	return f.open(QIODevice::ReadOnly) ? QShader::fromSerialized(f.readAll()) : QShader();
 }
 
-QQuickRhiItemRenderer* Waveform::createRenderer()
-{
-	return new WaveformRenderer;
-}
-
-void Waveform::setAngle(float a)
-{
-	if (m_angle == a)
-		return;
-
-	m_angle = a;
-	Q_EMIT angleChanged();
-	update();
-}
-
 void WaveformRenderer::synchronize(QQuickRhiItem* rhiItem)
 {
 	Waveform *item = static_cast<Waveform *>(rhiItem);
-	m_angle = item->angle();
 	m_peaksUpdate.clear();
 	qSwap(m_peaksUpdate, item->m_peaksUpdate);
 }
@@ -124,15 +108,14 @@ void WaveformRenderer::initialize(QRhiCommandBuffer* cb)
 
 	if (!m_pipeline)
 	{
-
+		QRhiResourceUpdateBatch *resourceUpdates = m_rhi->nextResourceUpdateBatch();
+		createPipeline(cb, resourceUpdates);
 	}
 }
 
 void WaveformRenderer::render(QRhiCommandBuffer* cb)
 {
 	QRhiResourceUpdateBatch *resourceUpdates = m_rhi->nextResourceUpdateBatch();
-	if(!m_pipeline)
-		createPipeline(cb, resourceUpdates);
 
 	if(!m_peaksUpdate.isEmpty())
 	{
@@ -190,6 +173,19 @@ void WaveformRenderer::render(QRhiCommandBuffer* cb)
 	cb->endPass();
 }
 
+/*********************************************************************/
+
+Waveform::Waveform()
+{
+	connect(&m_peaksWatcher, &QFutureWatcher<QList<ARDOUR::PeakData>>::finished, this, &Waveform::updatePeaks);
+}
+
+
+QQuickRhiItemRenderer* Waveform::createRenderer()
+{
+	return new WaveformRenderer;
+}
+
 void Waveform::setAudioRegion(AudioRegion* newRegion)
 {
 	if (m_region == newRegion)
@@ -199,11 +195,21 @@ void Waveform::setAudioRegion(AudioRegion* newRegion)
 
 	if(m_region)
 	{
-		// TODO: Extra thread?
 		const ARDOUR::samplecnt_t start = newRegion->audioRegion()->start_sample();
 		const ARDOUR::samplecnt_t length = newRegion->audioRegion()->length_samples();
-		m_peaksUpdate.resize(1024);
-		newRegion->audioRegion()->read_peaks(m_peaksUpdate.data(), m_peaksUpdate.length(), start, length, 0, 64);
+		QFuture<QVector<ARDOUR::PeakData>> future = QtConcurrent::run([=]() {
+			// Code in this block will run in another thread
+			QList<ARDOUR::PeakData> out(1024);
+			newRegion->audioRegion()->read_peaks(out.data(), out.length(), start, length, 0, 64);
+			return out;
+		});
+		m_peaksWatcher.setFuture(future);
 	}
 	Q_EMIT audioRegionChanged();
+}
+
+void Waveform::updatePeaks()
+{
+	m_peaksUpdate = m_peaksWatcher.result();
+	update();
 }

@@ -1,4 +1,4 @@
-find_package(Qt6 REQUIRED COMPONENTS Core Quick ShaderTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick ShaderTools Concurrent)
 
 #qt_add_library(Ardour SHARED)
 qt_add_qml_module(Ardour
@@ -46,6 +46,7 @@ target_compile_definitions(Ardour
 target_link_libraries(Ardour PRIVATE
 	Qt6::Quick
 	Qt6::GuiPrivate
+	Qt6::Concurrent
 	ardourlib
 )
 target_link_libraries(Ardour PRIVATE Qt6::Quick)
