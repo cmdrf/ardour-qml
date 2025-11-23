@@ -80,7 +80,8 @@ ApplicationWindow {
 
                     Waveform {
                         anchors.fill: parent
-                        audioRegion: region
+                        audioRegion: region.dataType === Region.AudioType ? region : null
+                        visible: region.dataType === Region.AudioType
                     }
                 }
             }

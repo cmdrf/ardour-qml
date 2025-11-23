@@ -29,8 +29,21 @@ class Region : public Stateful
 	Q_PROPERTY(quint64 regionGroup READ regionGroup WRITE setRegionGroup NOTIFY regionGroupChanged FINAL)
 	Q_PROPERTY(float stretch READ stretch NOTIFY stretchChanged FINAL)
 	Q_PROPERTY(float shift READ shift NOTIFY shiftChanged FINAL)
+	Q_PROPERTY(DataType dataType READ dataType CONSTANT FINAL)
+
+	QML_ELEMENT
+	QML_UNCREATABLE("")
+	Q_DISABLE_COPY(Region)
 
 public:
+	enum DataType
+	{
+		AudioType,
+		MidiType,
+		UnknownType
+	};
+	Q_ENUM(DataType)
+
 	explicit Region(QObject *parent, std::shared_ptr<ARDOUR::Region> region);
 
 	TimePos position() const {return region()->position();}
@@ -52,6 +65,7 @@ public:
 	quint64 regionGroup() const {return region()->region_group();}
 	float stretch() const {return region()->stretch();}
 	float shift() const {return region()->shift();}
+	DataType dataType() const;
 
 	std::shared_ptr<ARDOUR::Region> region() {return std::dynamic_pointer_cast<ARDOUR::Region>(m_stateful);}
 	const std::shared_ptr<ARDOUR::Region> region() const {return std::dynamic_pointer_cast<ARDOUR::Region>(m_stateful);}

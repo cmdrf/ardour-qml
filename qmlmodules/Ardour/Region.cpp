@@ -10,6 +10,17 @@ Region::Region(QObject *parent, std::shared_ptr<ARDOUR::Region> region)
 	b.connect(region->PropertyChanged, this, &Region::updateProperties);
 }
 
+Region::DataType Region::dataType() const
+{
+	ARDOUR::DataType type = region()->data_type();
+	if(type == ARDOUR::DataType::AUDIO)
+		return AudioType;
+	else if(type == ARDOUR::DataType::MIDI)
+		return MidiType;
+	else
+		return UnknownType;
+}
+
 void Region::setAncestralData(const TimePos& start, const TimeCount& length, float stretch, float shift)
 {
 	region()->set_ancestral_data(start, length, stretch, shift);
