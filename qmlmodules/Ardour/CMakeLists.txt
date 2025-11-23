@@ -21,6 +21,7 @@ qt_add_qml_module(Ardour
 	SOURCES TimeCount.h
 	SOURCES AudioRegion.h AudioRegion.cpp
 	SOURCES Waveform.h Waveform.cpp
+	SOURCES MidiRegion.h MidiRegion.cpp
 )
 
 qt6_add_shaders(Ardour "Ardour_shaders"

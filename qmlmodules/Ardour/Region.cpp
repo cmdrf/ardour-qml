@@ -65,5 +65,18 @@ void Region::updateProperties(const PBD::PropertyChange& change)
 			Q_EMIT tagsChanged();
 		else if(id == ARDOUR::Properties::reg_group.property_id)
 			Q_EMIT regionGroupChanged();
+		else if(id == ARDOUR::Properties::stretch.property_id)
+			Q_EMIT stretchChanged();
+		else if(id == ARDOUR::Properties::shift.property_id)
+			Q_EMIT shiftChanged();
+		else if(id == ARDOUR::Properties::contents.property_id)
+			Q_EMIT contentsChanged();
+		else if(id == ARDOUR::Properties::region_fx.property_id)
+			Q_EMIT regionFxChanged();
+		else if(id == ARDOUR::Properties::region_tempo.property_id)
+			Q_EMIT regionTempoChanged();
+		else if(id == ARDOUR::Properties::region_meter.property_id)
+			Q_EMIT regionMeterChanged();
+
 	}
 }

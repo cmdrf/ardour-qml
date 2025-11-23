@@ -126,6 +126,12 @@ Q_SIGNALS:
 	void stretchChanged();
 	void shiftChanged();
 
+	// Changed signals without properties:
+	void contentsChanged();
+	void regionFxChanged();
+	void regionTempoChanged();
+	void regionMeterChanged();
+
 private Q_SLOTS:
 	void updateProperties(const PBD::PropertyChange& change);
 
