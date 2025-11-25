@@ -72,9 +72,9 @@ ApplicationWindow {
             Repeater {
                 model: route.playlist
                 delegate: Rectangle {
-                    x: region.position.ticks / 500
+                    x: region.position.samples / 5000
                     height: 55
-                    width: region.length.ticks / 500
+                    width: region.length.samples / 5000
                     color: "blue"
                     radius: 3
 
@@ -82,6 +82,12 @@ ApplicationWindow {
                         anchors.fill: parent
                         audioRegion: region.dataType === Region.AudioType ? region : null
                         visible: region.dataType === Region.AudioType
+                    }
+
+                    MidiView {
+                        anchors.fill: parent
+                        visible: region.dataType === Region.MidiType
+                        midiRegion: region.dataType === Region.MidiType ? region : null
                     }
                 }
             }

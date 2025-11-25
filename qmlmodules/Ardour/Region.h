@@ -10,9 +10,16 @@
 class Region : public Stateful
 {
 	Q_OBJECT
+
+	/// First sample of the region along the timeline
 	Q_PROPERTY(TimePos position READ position WRITE setPosition NOTIFY positionChanged FINAL)
+
+	/// First sample of the region within its source(s)
 	Q_PROPERTY(TimePos start READ start WRITE setStart NOTIFY startChanged FINAL)
+
+	/// Number of samples the region represents
 	Q_PROPERTY(TimeCount length READ length WRITE setLength NOTIFY lengthChanged FINAL)
+
 	Q_PROPERTY(TimePos syncPosition READ syncPosition WRITE setSyncPosition NOTIFY syncPositionChanged FINAL)
 	Q_PROPERTY(TimePos ancestralStart READ ancestralStart NOTIFY ancestralStartChanged FINAL)
 	Q_PROPERTY(TimeCount ancestralLength READ ancestralLength NOTIFY ancestralLengthChanged FINAL)
@@ -131,6 +138,7 @@ Q_SIGNALS:
 	void regionFxChanged();
 	void regionTempoChanged();
 	void regionMeterChanged();
+
 
 private Q_SLOTS:
 	void updateProperties(const PBD::PropertyChange& change);
