@@ -133,7 +133,7 @@ Q_SIGNALS:
 	void stretchChanged();
 	void shiftChanged();
 
-	// Changed signals without properties:
+	// Change signals without properties:
 	void contentsChanged();
 	void regionFxChanged();
 	void regionTempoChanged();

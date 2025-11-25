@@ -1,4 +1,5 @@
 #include "MidiView.h"
+#include "QtBridgeUi.h"
 
 #include <ardour/midi_model.h>
 #include <evoral/EventSink.h>
@@ -81,13 +82,17 @@ void MidiView::setMidiRegion(MidiRegion* region)
 {
 	if(region != m_midiRegion)
 	{
+		if(m_midiRegion)
+			disconnect(m_midiRegion, &MidiRegion::contentsChanged, this, &MidiView::update);
 		m_midiRegion = region;
 		Q_EMIT midiRegionChanged();
 
-		// Populate m_notes:
 		m_notes.clear();
 		if(m_midiRegion)
 		{
+			connect(m_midiRegion, &MidiRegion::contentsChanged, this, &MidiView::update);
+
+			// Populate m_notes:
 			m_regionLength = m_midiRegion->region()->length_samples();
 			auto seq = m_midiRegion->midiRegion()->model();
 
@@ -109,5 +114,6 @@ void MidiView::setMidiRegion(MidiRegion* region)
 				}
 			);
 		}
+		update();
 	}
 }
