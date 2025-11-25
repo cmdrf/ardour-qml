@@ -96,9 +96,19 @@ static bool prepareEngine()
 {
 	ARDOUR::AudioEngine* engine = ARDOUR::AudioEngine::instance();
 
+	auto availableBackends = engine->available_backends();
+	std::string selectedBackend = "None (Dummy)";
+	qInfo("Available backends:");
+	for(const auto& backend: availableBackends)
+	{
+		qInfo() << backend->name;
+		if(strcmp(backend->name, "None (Dummy)") != 0)
+			selectedBackend = backend->name;
+	}
+
 	if(!engine->current_backend())
 	{
-		if (!engine->set_backend("None (Dummy)", "Unit-Test", ""))
+		if(!engine->set_backend(selectedBackend, "Unit-Test", ""))
 		{
 			qWarning() << "Cannot create Audio/MIDI engine\n";
 			engine->discover_backends();
@@ -127,16 +137,36 @@ static bool prepareEngine()
 static bool startEngine (uint32_t sampleRate)
 {
 	ARDOUR::AudioEngine* engine = ARDOUR::AudioEngine::instance();
+	std::shared_ptr<ARDOUR::AudioBackend> backend = engine->current_backend();
+
+	const std::string defaultDevice = backend->get_standard_device_name(ARDOUR::AudioBackend::DeviceDefault);
+	const std::string noneDevice = backend->get_standard_device_name(ARDOUR::AudioBackend::DeviceNone);
+	std::string selectedDevice;
+	qInfo() << "Available output devices:";
+	auto outputDevices = backend->enumerate_output_devices();
+	for(auto& device: outputDevices)
+	{
+		qInfo() << device.name;
+		if(device.name == defaultDevice || (selectedDevice.empty() && device.name != noneDevice))
+			selectedDevice = device.name;
+	}
+
+	if(backend->set_output_device_name(selectedDevice))
+	{
+		qWarning() << "Cannot set device to" << selectedDevice;
+		return false;
+	}
 
 	if(engine->set_sample_rate(sampleRate))
 	{
-		qWarning() << "Cannot set session's samplerate.\n";
+		qWarning() << "Cannot set session's samplerate to" << sampleRate;
+		qWarning() << engine->get_last_backend_error();
 		return false;
 	}
 
 	if(engine->start() != 0)
 	{
-		qWarning() << "Cannot start Audio/MIDI engine\n";
+		qWarning() << "Cannot start Audio/MIDI engine";
 		return false;
 	}
 
