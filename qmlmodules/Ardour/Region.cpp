@@ -3,7 +3,7 @@
 
 
 Region::Region(QObject *parent, std::shared_ptr<ARDOUR::Region> region)
-	: Stateful{parent, region}
+	: StatefulDestructible{parent, region}
 {
 	QtBridgeUi& b = QtBridgeUi::instance();
 

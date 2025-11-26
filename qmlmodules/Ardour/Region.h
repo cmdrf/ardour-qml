@@ -1,13 +1,13 @@
 #ifndef REGION_H
 #define REGION_H
 
-#include "Stateful.h"
+#include "StatefulDestructible.h"
 #include "TimeCount.h"
 #include "TimePos.h"
 
 #include <ardour/region.h>
 
-class Region : public Stateful
+class Region : public StatefulDestructible
 {
 	Q_OBJECT
 

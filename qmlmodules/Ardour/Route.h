@@ -1,6 +1,9 @@
 #ifndef ROUTE_H
 #define ROUTE_H
 
+#include "StatefulDestructible.h"
+#include "Controllable.h"
+
 #include <ardour/solo_isolate_control.h>
 #include <ardour/track.h>
 #include <ardour/route.h>
@@ -8,7 +11,7 @@
 #include <QObject>
 #include <QtQmlIntegration>
 
-class Route : public QObject
+class Route : public StatefulDestructible
 {
 	Q_OBJECT
 	QML_ANONYMOUS
@@ -25,22 +28,29 @@ class Route : public QObject
 	/** Numbers >0 are tracks, <0 are busses. 0 is reserved. */
 	Q_PROPERTY(qint64 trackNumber READ trackNumber WRITE setTrackNumber NOTIFY trackNumberChanged FINAL)
 
+	Q_PROPERTY(Controllable* muteControl READ muteControl CONSTANT)
+
 public:
 	explicit Route(QObject* parent, std::shared_ptr<ARDOUR::Route> route);
 
-	bool isTrack () const {return m_route->is_track();}
+	std::shared_ptr<ARDOUR::Route> route() {return std::dynamic_pointer_cast<ARDOUR::Route>(m_stateful);}
+	const std::shared_ptr<ARDOUR::Route> route() const {return std::dynamic_pointer_cast<ARDOUR::Route>(m_stateful);}
 
-	bool active() const {return m_route->active();}
-	bool muted() const {return m_route->muted();}
-	bool soloed() const {return m_route->soloed();}
-	bool soloIsolated() const {return m_route->solo_isolate_control()->solo_isolated();}
-	bool isSafe() const {return m_route->is_safe();}
-	bool canSolo() const {return m_route->can_solo();}
-	bool canMonitor() const {return m_route->can_monitor();}
-	qint64 trackNumber() const {return m_route->track_number();}
+	bool isTrack () const {return route()->is_track();}
 
-	void setActive(bool active) {m_route->set_active(active, nullptr);}
-	void setTrackNumber(qint64 trackNumber) {m_route->set_track_number(trackNumber);}
+	bool active() const {return route()->active();}
+	bool muted() const {return route()->muted();}
+	bool soloed() const {return route()->soloed();}
+	bool soloIsolated() const {return route()->solo_isolate_control()->solo_isolated();}
+	bool isSafe() const {return route()->is_safe();}
+	bool canSolo() const {return route()->can_solo();}
+	bool canMonitor() const {return route()->can_monitor();}
+	qint64 trackNumber() const {return route()->track_number();}
+
+	void setActive(bool active) {route()->set_active(active, nullptr);}
+	void setTrackNumber(qint64 trackNumber) {route()->set_track_number(trackNumber);}
+
+	Controllable* muteControl() {return m_muteControl;}
 
 Q_SIGNALS:
 	void activeChanged();
@@ -50,8 +60,8 @@ Q_SIGNALS:
 	void isSafeChanged();
 	void trackNumberChanged();
 
-protected:
-	std::shared_ptr<ARDOUR::Route> m_route;
+private:
+	QPointer<Controllable> m_muteControl;
 };
 
 #endif // ROUTE_H

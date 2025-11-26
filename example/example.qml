@@ -59,35 +59,54 @@ ApplicationWindow {
     ListView {
         anchors.fill: parent
         model: ardour.session ? ardour.session.tracks : null
-        delegate: Rectangle {
+        flickableDirection: Flickable.Flickable.HorizontalAndVerticalFlick
+        contentWidth: 2000
+        delegate: Row {
             required property var route
             required property int trackNumber
-            color: "lightgreen"
-            width: 1280
+
+            width: 2000
             height: 60
-            Text {
-                text: trackNumber
+            Rectangle {
+                width: 200
+                height: 60
+                color: "darkgrey"
+
+                Text {
+                    text: trackNumber
+                }
+
+                Button {
+                    text: "M"
+                    highlighted: route.muted
+                    onClicked: route.muteControl.value = route.muted ? 0.0 : 1.0
+                }
             }
 
-            Repeater {
-                model: route.playlist
-                delegate: Rectangle {
-                    x: region.position.samples / 5000
-                    height: 55
-                    width: region.length.samples / 5000
-                    color: "blue"
-                    radius: 3
+            Rectangle {
+                color: "lightgrey"
+                height: 60
+                width: 2000
+                Repeater {
+                    model: route.playlist
+                    delegate: Rectangle {
+                        x: region.position.samples / 5000
+                        height: 55
+                        width: region.length.samples / 5000
+                        color: "blue"
+                        radius: 3
 
-                    Waveform {
-                        anchors.fill: parent
-                        audioRegion: region.dataType === Region.AudioType ? region : null
-                        visible: region.dataType === Region.AudioType
-                    }
+                        Waveform {
+                            anchors.fill: parent
+                            audioRegion: region.dataType === Region.AudioType ? region : null
+                            visible: region.dataType === Region.AudioType
+                        }
 
-                    MidiView {
-                        anchors.fill: parent
-                        visible: region.dataType === Region.MidiType
-                        midiRegion: region.dataType === Region.MidiType ? region : null
+                        MidiView {
+                            anchors.fill: parent
+                            visible: region.dataType === Region.MidiType
+                            midiRegion: region.dataType === Region.MidiType ? region : null
+                        }
                     }
                 }
             }

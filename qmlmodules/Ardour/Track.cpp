@@ -20,14 +20,14 @@ Track::FreezeState Track::freezeState() const
 
 const ARDOUR::Track* Track::track() const
 {
-	Q_ASSERT(m_route->is_track());
-	return static_cast<ARDOUR::Track*>(m_route.get());
+	Q_ASSERT(route()->is_track());
+	return static_cast<ARDOUR::Track*>(route().get());
 }
 
 ARDOUR::Track* Track::track()
 {
-	Q_ASSERT(m_route->is_track());
-	return static_cast<ARDOUR::Track*>(m_route.get());
+	Q_ASSERT(route()->is_track());
+	return static_cast<ARDOUR::Track*>(route().get());
 }
 
 Track::AlignStyle Track::alignStyle() const

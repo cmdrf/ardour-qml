@@ -23,6 +23,8 @@ qt_add_qml_module(Ardour
 	SOURCES Waveform.h Waveform.cpp
 	SOURCES MidiRegion.h MidiRegion.cpp
 	SOURCES MidiView.h MidiView.cpp
+	SOURCES Controllable.h Controllable.cpp
+	SOURCES StatefulDestructible.h
 )
 
 qt6_add_shaders(Ardour "Ardour_shaders"

@@ -2,12 +2,10 @@
 #include "QtBridgeUi.h"
 
 Route::Route(QObject *parent, std::shared_ptr<ARDOUR::Route> route) :
-	QObject{parent},
-	m_route(route)
+	StatefulDestructible{parent, route},
+	m_muteControl(new Controllable(this, route->mute_control()))
 {
 	QtBridgeUi& b = QtBridgeUi::instance();
-
-	b.connect(route->DropReferences, this, &QObject::deleteLater);
 
 	b.connect(route->active_changed, this, &Route::activeChanged);
 
