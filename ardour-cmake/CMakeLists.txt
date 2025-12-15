@@ -67,12 +67,9 @@ add_library(ardourlib SHARED
     ${A}/audio_backend.cc
     ${A}/audio_buffer.cc
 	${A}/audio_library.cc
-	${A}/audio_playlist_importer.cc
 	${A}/audio_playlist_source.cc
 	${A}/audio_playlist.cc
 	${A}/audio_port.cc
-	${A}/audio_region_importer.cc
-	${A}/audio_track_importer.cc
 	${A}/audio_track.cc
     ${A}/audioengine.cc
 	${A}/audioanalyser.cc
@@ -102,7 +99,6 @@ add_library(ardourlib SHARED
 	${A}/control_group.cc
 	${A}/control_protocol_manager.cc
 	${A}/convolver.cc
-	${A}/cycle_timer.cc
 	${A}/data_type.cc
 	${A}/debug.cc
 	${A}/default_click.cc
@@ -115,7 +111,6 @@ add_library(ardourlib SHARED
 	${A}/dsp_filter.cc
 	${A}/ebur128_analysis.cc
 	${A}/element_import_handler.cc
-	${A}/element_importer.cc
 	${A}/engine_slave.cc
 	${A}/enums.cc
 	${A}/event_type_map.cc
@@ -166,7 +161,6 @@ add_library(ardourlib SHARED
     ${A}/library.cc
 #	${A}/linux_vst_support.cc
     ${A}/location.cc
-    ${A}/location_importer.cc
     ${A}/ltc_file_reader.cc
     ${A}/ltc_slave.cc
     ${A}/lua_api.cc
@@ -324,7 +318,6 @@ add_library(ardourlib SHARED
     ${A}/system_exec.cc
     ${A}/tailtime.cc
     ${A}/template_utils.cc
-    ${A}/tempo_map_importer.cc
     ${A}/thawlist.cc
     ${A}/thread_buffers.cc
     ${A}/ticker.cc
