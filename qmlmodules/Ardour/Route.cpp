@@ -1,8 +1,11 @@
 #include "Route.h"
 #include "QtBridgeUi.h"
 
+#include <ardour/session.h>
+
 Route::Route(QObject *parent, std::shared_ptr<ARDOUR::Route> route) :
 	StatefulDestructible{parent, route},
+	m_soloControl(new Controllable(this, route->solo_control())),
 	m_muteControl(new Controllable(this, route->mute_control()))
 {
 	QtBridgeUi& b = QtBridgeUi::instance();
@@ -10,6 +13,8 @@ Route::Route(QObject *parent, std::shared_ptr<ARDOUR::Route> route) :
 	b.connect(route->active_changed, this, &Route::activeChanged);
 
 	b.connect(route->mute_control()->Changed, this, &Route::mutedChanged);
+	b.connect(route->mute_control()->Changed, this, &Route::mutedByOthersSoloingChanged);
+	b.connect(route->session().SoloChanged, this, &Route::mutedByOthersSoloingChanged);
 	b.connect(route->solo_control()->Changed, this, &Route::soloedChanged);
 	b.connect(route->solo_safe_control()->Changed, this, &Route::isSafeChanged);
 	b.connect(route->solo_isolate_control()->Changed, this, &Route::soloIsolatedChanged);

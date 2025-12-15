@@ -72,14 +72,22 @@ ApplicationWindow {
                 height: 60
                 color: "darkgrey"
 
-                Text {
-                    text: trackNumber
-                }
+                Row {
+                    anchors.fill: parent
 
-                Button {
-                    text: "M"
-                    highlighted: route.muted
-                    onClicked: route.muteControl.value = route.muted ? 0.0 : 1.0
+                    Text {
+                        text: trackNumber
+                    }
+
+                    Button {
+                        contentItem: Text{text: "M"; color: route.muted ? "blue" : (route.mutedByOthersSoloing ? "lightblue" : "black")}
+                        onClicked: route.muteControl.value = route.muted ? 0.0 : 1.0
+                    }
+
+                    Button {
+                        contentItem: Text{text: "S"; color: route.soloed ? "orange" : "black"}
+                        onClicked: route.soloControl.value = route.soloed ? 0.0 : 1.0
+                    }
                 }
             }
 

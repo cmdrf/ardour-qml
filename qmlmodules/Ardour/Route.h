@@ -19,6 +19,7 @@ class Route : public StatefulDestructible
 
 	Q_PROPERTY(bool active READ active WRITE setActive NOTIFY activeChanged FINAL)
 	Q_PROPERTY(bool muted READ muted NOTIFY mutedChanged FINAL)
+	Q_PROPERTY(bool mutedByOthersSoloing READ mutedByOthersSoloing NOTIFY mutedByOthersSoloingChanged FINAL)
 	Q_PROPERTY(bool soloed READ soloed NOTIFY soloedChanged FINAL)
 	Q_PROPERTY(bool soloIsolated READ soloIsolated NOTIFY soloIsolatedChanged FINAL)
 	Q_PROPERTY(bool isSafe READ isSafe NOTIFY isSafeChanged FINAL)
@@ -28,6 +29,7 @@ class Route : public StatefulDestructible
 	/** Numbers >0 are tracks, <0 are busses. 0 is reserved. */
 	Q_PROPERTY(qint64 trackNumber READ trackNumber WRITE setTrackNumber NOTIFY trackNumberChanged FINAL)
 
+	Q_PROPERTY(Controllable* soloControl READ soloControl CONSTANT)
 	Q_PROPERTY(Controllable* muteControl READ muteControl CONSTANT)
 
 public:
@@ -40,6 +42,7 @@ public:
 
 	bool active() const {return route()->active();}
 	bool muted() const {return route()->muted();}
+	bool mutedByOthersSoloing() const {return route()->muted_by_others_soloing();}
 	bool soloed() const {return route()->soloed();}
 	bool soloIsolated() const {return route()->solo_isolate_control()->solo_isolated();}
 	bool isSafe() const {return route()->is_safe();}
@@ -50,17 +53,20 @@ public:
 	void setActive(bool active) {route()->set_active(active, nullptr);}
 	void setTrackNumber(qint64 trackNumber) {route()->set_track_number(trackNumber);}
 
+	Controllable* soloControl() {return m_soloControl;}
 	Controllable* muteControl() {return m_muteControl;}
 
 Q_SIGNALS:
 	void activeChanged();
 	void mutedChanged();
+	void mutedByOthersSoloingChanged();
 	void soloedChanged();
 	void soloIsolatedChanged();
 	void isSafeChanged();
 	void trackNumberChanged();
 
 private:
+	QPointer<Controllable> m_soloControl;
 	QPointer<Controllable> m_muteControl;
 };
 
