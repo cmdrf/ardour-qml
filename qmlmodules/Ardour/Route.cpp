@@ -4,7 +4,7 @@
 #include <ardour/session.h>
 
 Route::Route(QObject *parent, std::shared_ptr<ARDOUR::Route> route) :
-	StatefulDestructible{parent, route},
+	Stripable{parent, route},
 	m_soloControl(new Controllable(this, route->solo_control())),
 	m_muteControl(new Controllable(this, route->mute_control()))
 {

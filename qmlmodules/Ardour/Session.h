@@ -2,6 +2,7 @@
 #define SESSION_H
 
 #include "RouteModel.h"
+#include "CoreSelection.h"
 
 #include <ardour/session.h>
 
@@ -31,6 +32,7 @@ class Session : public QObject
 
 	Q_PROPERTY(RouteModel* routes READ routes CONSTANT FINAL)
 	Q_PROPERTY(QAbstractItemModel* tracks READ tracks CONSTANT FINAL)
+	Q_PROPERTY(CoreSelection* selection READ selection CONSTANT FINAL)
 
 public:
 	enum RecordState
@@ -54,6 +56,7 @@ public:
 
 	RouteModel* routes() {return &m_routes;}
 	QAbstractItemModel* tracks() {return &m_tracks;}
+	CoreSelection* selection() {return &m_selection;}
 
 public Q_SLOTS:
 /*
@@ -84,6 +87,7 @@ private:
 	bool m_playLoop;
 	RouteModel m_routes;
 	QSortFilterProxyModel m_tracks;
+	CoreSelection m_selection;
 
 	/** Timer to regularly update the transport position during play. */
 	QTimer m_transportPositionQueryTimer;

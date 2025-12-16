@@ -5,7 +5,8 @@ Session::Session(QObject* parent, ARDOUR::Session* session) :
 	QObject(parent),
 	m_session(session),
 	m_transportSpeed(session->transport_speed()),
-	m_playLoop(session->get_play_loop())
+	m_playLoop(session->get_play_loop()),
+	m_selection(this, session->selection())
 
 {
 	QtBridgeUi& b = QtBridgeUi::instance();

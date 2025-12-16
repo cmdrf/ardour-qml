@@ -1,7 +1,7 @@
 #ifndef ROUTE_H
 #define ROUTE_H
 
-#include "StatefulDestructible.h"
+#include "Stripable.h"
 #include "Controllable.h"
 
 #include <ardour/solo_isolate_control.h>
@@ -11,7 +11,7 @@
 #include <QObject>
 #include <QtQmlIntegration>
 
-class Route : public StatefulDestructible
+class Route : public Stripable
 {
 	Q_OBJECT
 	QML_ANONYMOUS
