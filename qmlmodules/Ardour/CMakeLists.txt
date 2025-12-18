@@ -31,6 +31,7 @@ qt_add_qml_module(Ardour
 	SOURCES CoreSelection.h CoreSelection.cpp
 	SOURCES Stripable.h Stripable.cpp
 	SOURCES PresentationInfo.h PresentationInfo.cpp
+	SOURCES AutomationControl.h AutomationControl.cpp
 )
 
 qt6_add_shaders(Ardour "Ardour_shaders"

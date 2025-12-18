@@ -8,8 +8,12 @@
 #include <ardour/monitor_control.h>
 
 Stripable::Stripable(QObject *parent, std::shared_ptr<ARDOUR::Stripable> stripable) :
-	SessionObject{parent, stripable}
+	SessionObject{parent, stripable},
+	m_selected(stripable->is_selected())
 {
+	QtBridgeUi& b = QtBridgeUi::instance();
+
+	b.connect(ARDOUR::PresentationInfo::Change, this, &Stripable::handlePresentationChange);
 
 }
 
@@ -43,6 +47,16 @@ Controllable* Stripable::monitoringControl()
 	return lazyCreate(m_monitoringControl, &ARDOUR::Stripable::monitoring_control);
 }
 
+void Stripable::handlePresentationChange()
+{
+	bool newSelected = stripable()->is_selected();
+	if(newSelected != m_selected)
+	{
+		m_selected = newSelected;
+		Q_EMIT selectedChanged();
+	}
+}
+
 template<class C, typename F>
 C* Stripable::lazyCreate(QPointer<C>& pointer, F getter)
 {
@@ -58,4 +72,9 @@ C* Stripable::lazyCreate(QPointer<C>& pointer, F getter)
 		}
 	}
 	return nullptr;
+}
+
+bool Stripable::selected() const
+{
+	return m_selected;
 }

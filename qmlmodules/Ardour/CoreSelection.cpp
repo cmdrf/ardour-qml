@@ -15,6 +15,16 @@ CoreSelection::CoreSelection(QObject* parent, ARDOUR::CoreSelection& coreSelecti
 	CoreSelection(parent, std::shared_ptr<ARDOUR::CoreSelection>(&coreSelection))
 {}
 
+bool CoreSelection::selectStripableAndMaybeGroup(Stripable* s, SelectionOperation op, bool withGroup, bool routesOnly)
+{
+	return coreSelection()->select_stripable_and_maybe_group(s->stripable(), static_cast<ARDOUR::SelectionOperation>(op), withGroup, routesOnly);
+}
+
+void CoreSelection::selectStripableWithControl(Stripable* s, AutomationControl* c, SelectionOperation op)
+{
+	coreSelection()->select_stripable_with_control(s->stripable(), c->automationControl(), static_cast<ARDOUR::SelectionOperation>(op));
+}
+
 Stripable* CoreSelection::firstSelectedStripable()
 {
 	return m_firstSelectedStripable;
