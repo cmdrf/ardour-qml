@@ -8,6 +8,7 @@
 class Controllable : public StatefulDestructible
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(Controllable)
 
 	Q_PROPERTY(QString name READ name CONSTANT)
 	Q_PROPERTY(double value READ value WRITE setValue NOTIFY valueChanged FINAL)

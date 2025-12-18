@@ -2,7 +2,6 @@
 #define ROUTE_H
 
 #include "Stripable.h"
-#include "Controllable.h"
 
 #include <ardour/solo_isolate_control.h>
 #include <ardour/track.h>
@@ -29,9 +28,6 @@ class Route : public Stripable
 	/** Numbers >0 are tracks, <0 are busses. 0 is reserved. */
 	Q_PROPERTY(qint64 trackNumber READ trackNumber WRITE setTrackNumber NOTIFY trackNumberChanged FINAL)
 
-	Q_PROPERTY(Controllable* soloControl READ soloControl CONSTANT)
-	Q_PROPERTY(Controllable* muteControl READ muteControl CONSTANT)
-
 public:
 	explicit Route(QObject* parent, std::shared_ptr<ARDOUR::Route> route);
 
@@ -53,9 +49,6 @@ public:
 	void setActive(bool active) {route()->set_active(active, nullptr);}
 	void setTrackNumber(qint64 trackNumber) {route()->set_track_number(trackNumber);}
 
-	Controllable* soloControl() {return m_soloControl;}
-	Controllable* muteControl() {return m_muteControl;}
-
 Q_SIGNALS:
 	void activeChanged();
 	void mutedChanged();
@@ -66,8 +59,6 @@ Q_SIGNALS:
 	void trackNumberChanged();
 
 private:
-	QPointer<Controllable> m_soloControl;
-	QPointer<Controllable> m_muteControl;
 };
 
 #endif // ROUTE_H
