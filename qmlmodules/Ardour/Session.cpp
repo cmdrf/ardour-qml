@@ -23,15 +23,13 @@ Session::Session(QObject* parent, ARDOUR::Session* session) :
 
 	m_tracks.setSourceModel(&m_routes);
 	m_tracks.setFilterRole(RouteModel::IsTrackRole);
-	m_tracks.setFilterRegularExpression(QRegularExpression("^true$", QRegularExpression::CaseInsensitiveOption));
+	m_tracks.setFilterFixedString("true");
 	m_tracks.setSortRole(RouteModel::TrackNumberRole);
 
 	// Timer:
 	m_transportPositionQueryTimer.setInterval(100);
 	connect(&m_transportPositionQueryTimer, &QTimer::timeout, this, &Session::transportSampleChanged);
 }
-
-Session::~Session() {}
 
 bool Session::dirty() const
 {

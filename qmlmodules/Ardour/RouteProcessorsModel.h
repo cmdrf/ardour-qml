@@ -31,6 +31,8 @@ private Q_SLOTS:
 	void removeProcessor(QObject* processor);
 
 private:
+	void populate();
+
 	std::shared_ptr<ARDOUR::Route> m_route;
 	QVector<QPointer<Processor>> m_processors;
 };

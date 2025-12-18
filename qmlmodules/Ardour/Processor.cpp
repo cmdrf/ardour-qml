@@ -1,6 +1,5 @@
 #include "Processor.h"
 
-
 Processor::Processor(QObject *parent, std::shared_ptr<ARDOUR::Processor> processor)
 	: SessionObject{parent, processor}
 {
@@ -9,6 +8,12 @@ Processor::Processor(QObject *parent, std::shared_ptr<ARDOUR::Processor> process
 	b.connect(processor->ActiveChanged, this, &Processor::activeChanged);
 	b.connect(processor->ActiveChanged, this, &Processor::enabledChanged); // Need to disconnect in subclasses?
 	b.connect(processor->BypassableChanged, this, &Processor::bypassableChanged);
+}
+
+Processor* Processor::create(QObject* parent, std::shared_ptr<ARDOUR::Processor> processor)
+{
+	// TODO: PluginInsert, Send
+	return new Processor(parent, processor);
 }
 
 bool Processor::enabled() const

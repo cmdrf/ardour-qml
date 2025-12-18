@@ -1,4 +1,5 @@
 #include "Stripable.h"
+#include "Route.h"
 
 #include <ardour/stripable.h>
 #include <ardour/gain_control.h>
@@ -15,6 +16,15 @@ Stripable::Stripable(QObject *parent, std::shared_ptr<ARDOUR::Stripable> stripab
 
 	b.connect(ARDOUR::PresentationInfo::Change, this, &Stripable::handlePresentationChange);
 
+}
+
+Stripable* Stripable::create(QObject* parent, std::shared_ptr<ARDOUR::Stripable> stripable)
+{
+	Q_ASSERT(stripable);
+
+	if(auto r = std::dynamic_pointer_cast<ARDOUR::Route>(stripable))
+		return Route::create(parent, r);
+	return new Stripable(parent, stripable);
 }
 
 bool Stripable::selected() const

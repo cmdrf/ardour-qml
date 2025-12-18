@@ -48,6 +48,8 @@ Stateful::Stateful(QObject *parent, std::shared_ptr<PBD::Stateful> stateful) :
 	QObject{parent},
 	m_stateful(stateful)
 {
+	Q_ASSERT(stateful);
+
 	QtBridgeUi& b = QtBridgeUi::instance();
 
 	b.connect(stateful->PropertyChanged, this, &Stateful::updateProperties);

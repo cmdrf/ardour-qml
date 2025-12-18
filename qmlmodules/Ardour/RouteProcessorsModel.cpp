@@ -1,5 +1,6 @@
 #include "RouteProcessorsModel.h"
 
+#include <ardour/amp.h>
 #include <ardour/send.h>
 #include <ardour/plugin_insert.h>
 #include <ardour/internal_send.h>
@@ -12,7 +13,7 @@ RouteProcessorsModel::RouteProcessorsModel(QObject* parent, std::shared_ptr<ARDO
 	QtBridgeUi& b = QtBridgeUi::instance();
 
 	b.connect(route->processors_changed, this, &RouteProcessorsModel::handleProcessorChanges);
-
+	populate();
 }
 
 int RouteProcessorsModel::rowCount(const QModelIndex& parent) const
@@ -36,11 +37,16 @@ QVariant RouteProcessorsModel::data(const QModelIndex& index, int role) const
 			return "plugin";
 		else if(auto send = std::dynamic_pointer_cast<ARDOUR::Send>(p))
 		{
+			// Mimic Route::nth_send:
 			if(send == m_route->monitor_send())
 				return ""; // Monitor send is not an accessible send
 			else
 				return "send";
 		}
+		else if(dynamic_cast<ARDOUR::Amp*>(p.get()))
+			return "amp";
+		else if(dynamic_cast<ARDOUR::UnknownProcessor*>(p.get()))
+			return "unknown";
 		else
 			return "";
 	}
@@ -64,12 +70,16 @@ void RouteProcessorsModel::handleProcessorChanges(ARDOUR::RouteProcessorChange c
 		p->deleteLater();
 	m_processors.clear();
 
-	m_route->foreach_processor([&](auto processor){
-		// TODO: Create subclasses of Processor here (Send, PluginInsert):
-		m_processors.append(new Processor(this, processor.lock()));
-	});
+	populate();
 
 	endResetModel();
+}
+
+void RouteProcessorsModel::populate()
+{
+	m_route->foreach_processor([&](auto processor){
+		m_processors.append(Processor::create(this, processor.lock()));
+	});
 }
 
 void RouteProcessorsModel::removeProcessor(QObject* processor)

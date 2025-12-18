@@ -48,11 +48,7 @@ void RouteModel::addRoutes(ARDOUR::RouteList& routes)
 	beginInsertRows(QModelIndex(), m_routes.size(), m_routes.size() + routes.size());
 	for(auto& route: routes)
 	{
-		Route* r = nullptr;
-		if(route->is_track())
-			r = new Track(this, std::dynamic_pointer_cast<ARDOUR::Track>(route));
-		else
-			r = new Route(this, route);
+		Route* r = Route::create(this, route);
 		connect(r, &QObject::destroyed, this, &RouteModel::routeDestroyed);
 		connect(r, &Route::trackNumberChanged, this, &RouteModel::updateTrackNumber);
 		m_routes.append(r);

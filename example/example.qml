@@ -56,8 +56,17 @@ ApplicationWindow {
         onAccepted: ardour.loadSession(openDialog.selectedFile)
     }
 
-    ListView {
+    RowLayout {
         anchors.fill: parent
+        Strip {
+            stripable: ardour.session.selection.firstSelectedStripable
+            Layout.fillHeight: true
+            width: 180
+        }
+
+    ListView {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
         model: ardour.session ? ardour.session.tracks : null
         flickableDirection: Flickable.Flickable.HorizontalAndVerticalFlick
         contentWidth: 2000
@@ -100,5 +109,6 @@ ApplicationWindow {
                 }
             }
         }
+    }
     }
 }

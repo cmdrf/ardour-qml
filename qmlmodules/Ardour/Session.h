@@ -43,8 +43,7 @@ public:
 	};
 	Q_ENUM(RecordState);
 
-	explicit Session(QObject* parent, ARDOUR::Session* session);
-    ~Session() override;
+	Session(QObject* parent, ARDOUR::Session* session);
 
 	bool dirty() const;
 

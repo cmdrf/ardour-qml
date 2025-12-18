@@ -20,7 +20,10 @@ class Stripable : public SessionObject
 	Q_PROPERTY(PresentationInfo* presentationInfo READ presentationInfo CONSTANT)
 
 public:
-	explicit Stripable(QObject* parent, std::shared_ptr<ARDOUR::Stripable> stripable);
+	Stripable(QObject* parent, std::shared_ptr<ARDOUR::Stripable> stripable);
+
+	/// Create Stripable or one of its subclasses
+	static Stripable* create(QObject* parent, std::shared_ptr<ARDOUR::Stripable> stripable);
 
 	std::shared_ptr<ARDOUR::Stripable> stripable() {return std::dynamic_pointer_cast<ARDOUR::Stripable>(m_stateful);}
 	const std::shared_ptr<ARDOUR::Stripable> stripable() const {return std::dynamic_pointer_cast<ARDOUR::Stripable>(m_stateful);}

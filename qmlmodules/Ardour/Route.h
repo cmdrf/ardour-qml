@@ -1,6 +1,7 @@
 #ifndef ROUTE_H
 #define ROUTE_H
 
+#include "RouteProcessorsModel.h"
 #include "Stripable.h"
 
 #include <ardour/solo_isolate_control.h>
@@ -28,8 +29,15 @@ class Route : public Stripable
 	/** Numbers >0 are tracks, <0 are busses. 0 is reserved. */
 	Q_PROPERTY(qint64 trackNumber READ trackNumber WRITE setTrackNumber NOTIFY trackNumberChanged FINAL)
 
+	Q_PROPERTY(QAbstractItemModel* processors READ processors CONSTANT FINAL)
+	Q_PROPERTY(QAbstractItemModel* plugins READ plugins CONSTANT FINAL)
+	Q_PROPERTY(QAbstractItemModel* sends READ sends CONSTANT FINAL)
+
 public:
-	explicit Route(QObject* parent, std::shared_ptr<ARDOUR::Route> route);
+	Route(QObject* parent, std::shared_ptr<ARDOUR::Route> route);
+
+	/// Create Route or one of its subclasses
+	static Route* create(QObject* parent, std::shared_ptr<ARDOUR::Route> route);
 
 	std::shared_ptr<ARDOUR::Route> route() {return std::dynamic_pointer_cast<ARDOUR::Route>(m_stateful);}
 	const std::shared_ptr<ARDOUR::Route> route() const {return std::dynamic_pointer_cast<ARDOUR::Route>(m_stateful);}
@@ -49,6 +57,10 @@ public:
 	void setActive(bool active) {route()->set_active(active, nullptr);}
 	void setTrackNumber(qint64 trackNumber) {route()->set_track_number(trackNumber);}
 
+	QAbstractItemModel* processors();
+	QAbstractItemModel* plugins();
+	QAbstractItemModel* sends();
+
 Q_SIGNALS:
 	void activeChanged();
 	void mutedChanged();
@@ -59,6 +71,9 @@ Q_SIGNALS:
 	void trackNumberChanged();
 
 private:
+	RouteProcessorsModel* m_processors = nullptr;
+	QSortFilterProxyModel* m_plugins = nullptr;
+	QSortFilterProxyModel* m_sends = nullptr;
 };
 
 #endif // ROUTE_H

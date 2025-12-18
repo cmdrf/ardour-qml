@@ -13,7 +13,7 @@ class Stateful : public QObject
 	Q_PROPERTY(QVariantMap properties READ properties NOTIFY propertiesChanged FINAL)
 
 public:
-	explicit Stateful(QObject *parent, std::shared_ptr<PBD::Stateful> stateful);
+	Stateful(QObject* parent, std::shared_ptr<PBD::Stateful> stateful);
 
 	QVariantMap properties();
 

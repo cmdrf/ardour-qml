@@ -13,7 +13,7 @@ class SessionObject : public StatefulDestructible
 	Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
 
 public:
-	explicit SessionObject(QObject *parent, std::shared_ptr<ARDOUR::SessionObject>);
+	SessionObject(QObject* parent, std::shared_ptr<ARDOUR::SessionObject>);
 
 	std::shared_ptr<ARDOUR::SessionObject> sessionObject() {return std::dynamic_pointer_cast<ARDOUR::SessionObject>(m_stateful);}
 	const std::shared_ptr<ARDOUR::SessionObject> sessionObject() const {return std::dynamic_pointer_cast<ARDOUR::SessionObject>(m_stateful);}

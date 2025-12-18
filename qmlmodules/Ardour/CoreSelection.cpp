@@ -51,11 +51,11 @@ void CoreSelection::handlePresentationChange(PBD::PropertyChange const & change)
 			m_firstSelectedStripable.clear();
 			Q_EMIT firstSelectedStripableChanged();
 		}
-		else if(!m_firstSelectedStripable || fss != m_firstSelectedStripable->stripable())
+		else if(fss && (!m_firstSelectedStripable || fss != m_firstSelectedStripable->stripable()))
 		{
 			if(m_firstSelectedStripable)
 				m_firstSelectedStripable->deleteLater();
-			m_firstSelectedStripable = new Stripable(this, fss);
+			m_firstSelectedStripable = Stripable::create(this, fss);
 
 			// Signal if stripable self-destructs:
 			connect(m_firstSelectedStripable, &QObject::destroyed, this, &CoreSelection::firstSelectedStripableChanged);
