@@ -17,8 +17,8 @@ public:
 	std::shared_ptr<ARDOUR::Stripable> stripable() {return std::dynamic_pointer_cast<ARDOUR::Stripable>(m_stateful);}
 	const std::shared_ptr<ARDOUR::Stripable> stripable() const {return std::dynamic_pointer_cast<ARDOUR::Stripable>(m_stateful);}
 
-	Controllable* soloControl() {return m_soloControl;}
-	Controllable* muteControl() {return m_muteControl;}
+	Controllable* soloControl();
+	Controllable* muteControl();
 
 private:
 	QPointer<Controllable> m_soloControl;
