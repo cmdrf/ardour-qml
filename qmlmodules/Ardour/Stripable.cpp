@@ -17,32 +17,43 @@ Stripable::Stripable(QObject *parent, std::shared_ptr<ARDOUR::Stripable> stripab
 
 }
 
-Controllable* Stripable::gainControl()
+bool Stripable::selected() const
+{
+	return m_selected;
+}
+
+PresentationInfo* Stripable::presentationInfo()
+{
+	return lazyCreate(m_presentationInfo, &ARDOUR::Stripable::presentation_info_ptr);
+}
+
+
+AutomationControl* Stripable::gainControl()
 {
 	return lazyCreate(m_gainControl, &ARDOUR::Stripable::gain_control);
 }
 
-Controllable* Stripable::soloControl()
+AutomationControl* Stripable::soloControl()
 {
 	return lazyCreate(m_soloControl, &ARDOUR::Stripable::solo_control);
 }
 
-Controllable* Stripable::muteControl()
+AutomationControl* Stripable::muteControl()
 {
 	return lazyCreate(m_muteControl, &ARDOUR::Stripable::mute_control);
 }
 
-Controllable* Stripable::phaseControl()
+AutomationControl* Stripable::phaseControl()
 {
 	return lazyCreate(m_phaseControl, &ARDOUR::Stripable::phase_control);
 }
 
-Controllable* Stripable::trimControl()
+AutomationControl* Stripable::trimControl()
 {
 	return lazyCreate(m_trimControl, &ARDOUR::Stripable::trim_control);
 }
 
-Controllable* Stripable::monitoringControl()
+AutomationControl* Stripable::monitoringControl()
 {
 	return lazyCreate(m_monitoringControl, &ARDOUR::Stripable::monitoring_control);
 }
@@ -72,9 +83,4 @@ C* Stripable::lazyCreate(QPointer<C>& pointer, F getter)
 		}
 	}
 	return nullptr;
-}
-
-bool Stripable::selected() const
-{
-	return m_selected;
 }

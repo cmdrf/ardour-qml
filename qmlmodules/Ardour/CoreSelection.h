@@ -7,9 +7,13 @@
 
 #include <ardour/selection.h>
 
+#include <QtQml>
+
 class CoreSelection : public Stateful
 {
 	Q_OBJECT
+	QML_ELEMENT
+	QML_UNCREATABLE("")
 
 	Q_PROPERTY(Stripable* firstSelectedStripable READ firstSelectedStripable NOTIFY firstSelectedStripableChanged FINAL)
 

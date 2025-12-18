@@ -2,7 +2,8 @@
 #define STRIPABLE_H
 
 #include "SessionObject.h"
-#include "Controllable.h"
+#include "AutomationControl.h"
+#include "PresentationInfo.h"
 
 class Stripable : public SessionObject
 {
@@ -10,12 +11,13 @@ class Stripable : public SessionObject
 
 	Q_PROPERTY(bool selected READ selected NOTIFY selectedChanged FINAL)
 
-	Q_PROPERTY(Controllable* gainControl READ gainControl CONSTANT)
-	Q_PROPERTY(Controllable* soloControl READ soloControl CONSTANT)
-	Q_PROPERTY(Controllable* muteControl READ muteControl CONSTANT)
-	Q_PROPERTY(Controllable* phaseControl READ phaseControl CONSTANT)
-	Q_PROPERTY(Controllable* trimControl READ trimControl CONSTANT)
-	Q_PROPERTY(Controllable* monitoringControl READ monitoringControl CONSTANT)
+	Q_PROPERTY(AutomationControl* gainControl READ gainControl CONSTANT)
+	Q_PROPERTY(AutomationControl* soloControl READ soloControl CONSTANT)
+	Q_PROPERTY(AutomationControl* muteControl READ muteControl CONSTANT)
+	Q_PROPERTY(AutomationControl* phaseControl READ phaseControl CONSTANT)
+	Q_PROPERTY(AutomationControl* trimControl READ trimControl CONSTANT)
+	Q_PROPERTY(AutomationControl* monitoringControl READ monitoringControl CONSTANT)
+	Q_PROPERTY(PresentationInfo* presentationInfo READ presentationInfo CONSTANT)
 
 public:
 	explicit Stripable(QObject* parent, std::shared_ptr<ARDOUR::Stripable> stripable);
@@ -24,13 +26,14 @@ public:
 	const std::shared_ptr<ARDOUR::Stripable> stripable() const {return std::dynamic_pointer_cast<ARDOUR::Stripable>(m_stateful);}
 
 	bool selected() const;
+	PresentationInfo* presentationInfo();
 
-	Controllable* gainControl();
-	Controllable* soloControl();
-	Controllable* muteControl();
-	Controllable* phaseControl();
-	Controllable* trimControl();
-	Controllable* monitoringControl();
+	AutomationControl* gainControl();
+	AutomationControl* soloControl();
+	AutomationControl* muteControl();
+	AutomationControl* phaseControl();
+	AutomationControl* trimControl();
+	AutomationControl* monitoringControl();
 
 Q_SIGNALS:
 	void selectedChanged();
@@ -43,12 +46,13 @@ private:
 	C* lazyCreate(QPointer<C>& pointer, F getter);
 
 	bool m_selected;
-	QPointer<Controllable> m_gainControl;
-	QPointer<Controllable> m_soloControl;
-	QPointer<Controllable> m_muteControl;
-	QPointer<Controllable> m_phaseControl;
-	QPointer<Controllable> m_trimControl;
-	QPointer<Controllable> m_monitoringControl;
+	QPointer<PresentationInfo> m_presentationInfo;
+	QPointer<AutomationControl> m_gainControl;
+	QPointer<AutomationControl> m_soloControl;
+	QPointer<AutomationControl> m_muteControl;
+	QPointer<AutomationControl> m_phaseControl;
+	QPointer<AutomationControl> m_trimControl;
+	QPointer<AutomationControl> m_monitoringControl;
 };
 
 #endif // STRIPABLE_H

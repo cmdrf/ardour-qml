@@ -18,7 +18,8 @@ class PresentationInfo : public QObject // public Stateful
 	Q_PROPERTY(bool triggerTrack READ triggerTrack WRITE setTriggerTrack NOTIFY triggerTrackChanged FINAL)
 
 public:
-	explicit PresentationInfo(QObject* parent, ARDOUR::PresentationInfo& presentationInfo);
+	PresentationInfo(QObject* parent, ARDOUR::PresentationInfo& presentationInfo);
+	PresentationInfo(QObject* parent, ARDOUR::PresentationInfo* presentationInfo);
 
 	int order() const {return m_order;}
 

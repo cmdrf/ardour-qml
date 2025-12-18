@@ -10,10 +10,12 @@ PresentationInfo::PresentationInfo(QObject* parent, ARDOUR::PresentationInfo& pr
 	QtBridgeUi& b = QtBridgeUi::instance();
 
 	b.connect(presentationInfo.PropertyChanged, this, &PresentationInfo::handlePropertyChange);
-
 }
 
-
+PresentationInfo::PresentationInfo(QObject* parent, ARDOUR::PresentationInfo* presentationInfo) :
+	PresentationInfo(parent, *presentationInfo)
+{
+}
 
 QColor PresentationInfo::color() const
 {

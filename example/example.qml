@@ -70,7 +70,14 @@ ApplicationWindow {
             Rectangle {
                 width: 200
                 height: 60
-                color: "darkgrey"
+                color: route.selected ? "lightgrey" : "darkgrey"
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: (mouse) => {
+                        ardour.session.selection.selectStripableAndMaybeGroup(route, (mouse.modifiers & Qt.ShiftModifier) ? CoreSelection.SelectionToggle : CoreSelection.SelectionSet)
+                    }
+                }
 
                 Row {
                     anchors.fill: parent
