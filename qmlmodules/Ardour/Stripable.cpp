@@ -12,31 +12,26 @@ Stripable::Stripable(QObject *parent, std::shared_ptr<ARDOUR::Stripable> stripab
 
 Controllable* Stripable::soloControl()
 {
-	if(m_soloControl)
-		return m_soloControl;
-	else
-	{
-		auto s = stripable();
-		if(auto c = s->solo_control())
-		{
-			m_soloControl = new Controllable(this, c);
-			return m_soloControl;
-		}
-	}
-	return nullptr;
+	return lazyCreate<Controllable>(m_soloControl, &ARDOUR::Stripable::solo_control);
 }
 
 Controllable* Stripable::muteControl()
 {
-	if(m_muteControl)
-		return m_muteControl;
+	return lazyCreate<Controllable>(m_muteControl, &ARDOUR::Stripable::mute_control);
+}
+
+template<class C, typename F>
+C* Stripable::lazyCreate(QPointer<C>& pointer, F getter)
+{
+	if(pointer)
+		return pointer;
 	else
 	{
 		auto s = stripable();
-		if(auto c = s->mute_control())
+		if(auto c = std::invoke(getter, s.get()))
 		{
-			m_muteControl = new Controllable(this, c);
-			return m_muteControl;
+			pointer = new C(this, c);
+			return pointer;
 		}
 	}
 	return nullptr;

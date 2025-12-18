@@ -21,6 +21,9 @@ public:
 	Controllable* muteControl();
 
 private:
+	template<class C, typename F>
+	C* lazyCreate(QPointer<C>& pointer, F getter);
+
 	QPointer<Controllable> m_soloControl;
 	QPointer<Controllable> m_muteControl;
 
