@@ -1,0 +1,10 @@
+pkg_check_modules(LV2 REQUIRED IMPORTED_TARGET lv2)
+
+add_subdirectory(a-comp.lv2)
+add_subdirectory(a-delay.lv2)
+add_subdirectory(a-eq.lv2)
+add_subdirectory(a-exp.lv2)
+add_subdirectory(a-fluidsynth.lv2)
+add_subdirectory(a-reverb.lv2)
+add_subdirectory(a-vapor.lv2)
+add_subdirectory(reasonablesynth.lv2)

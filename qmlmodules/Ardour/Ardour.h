@@ -2,6 +2,7 @@
 #define ARDOUR_H
 
 #include "Session.h"
+#include "PluginManager.h"
 
 #include <QObject>
 
@@ -12,12 +13,14 @@ class Ardour : public QObject
 	Q_DISABLE_COPY(Ardour)
 
 	Q_PROPERTY(Session* session READ session NOTIFY sessionChanged FINAL)
+	Q_PROPERTY(PluginManager* pluginManager READ pluginManager CONSTANT FINAL)
 
 public:
 	explicit Ardour(QObject *parent = nullptr);
 	~Ardour();
 
 	Session* session() const;
+	PluginManager* pluginManager() {return m_pluginManager;}
 
 	Q_INVOKABLE bool createSession(const QString& dir, const QString& snapshotName, uint32_t sampleRate);
 	Q_INVOKABLE bool loadSession(const QString& dir, const QString& snapshotName = QString());
@@ -29,6 +32,7 @@ Q_SIGNALS:
 
 private:
 	Session* m_session = nullptr;
+	PluginManager* m_pluginManager;
 };
 
 #endif // ARDOUR_H

@@ -1,5 +1,6 @@
 
 #include "Ardour.h"
+#include "ardour/plugin_manager.h"
 #include "pbd/basename.h"
 
 #include <ardour/audio_backend.h>
@@ -190,10 +191,11 @@ Ardour::Ardour(QObject *parent)
 	PBD::EventLoop::set_event_loop_for_thread (&eventLoop);
 	ARDOUR::SessionEvent::create_per_thread_pool ("lua", 4096);
 
-
 	logReceiver.listen_to (PBD::warning);
 	logReceiver.listen_to (PBD::error);
 	logReceiver.listen_to (PBD::fatal);
+
+	m_pluginManager = new PluginManager(this);
 }
 
 Ardour::~Ardour()
