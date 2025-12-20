@@ -1,6 +1,8 @@
 #ifndef SESSION_H
 #define SESSION_H
 
+#include "PluginInfo.h"
+#include "Processor.h"
 #include "RouteModel.h"
 #include "CoreSelection.h"
 
@@ -56,6 +58,8 @@ public:
 	RouteModel* routes() {return &m_routes;}
 	QAbstractItemModel* tracks() {return &m_tracks;}
 	CoreSelection* selection() {return &m_selection;}
+
+	Q_INVOKABLE Processor* newPlugin(const PluginInfo& info, const QString& preset);
 
 public Q_SLOTS:
 /*

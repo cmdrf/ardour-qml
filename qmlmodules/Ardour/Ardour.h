@@ -16,6 +16,13 @@ class Ardour : public QObject
 	Q_PROPERTY(PluginManager* pluginManager READ pluginManager CONSTANT FINAL)
 
 public:
+	enum Placement
+	{
+		PreFaderPlacement = ARDOUR::PreFader,
+		PostFaderPlacement = ARDOUR::PostFader
+	};
+	Q_ENUM(Placement);
+
 	explicit Ardour(QObject *parent = nullptr);
 	~Ardour();
 

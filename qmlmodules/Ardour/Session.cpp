@@ -1,6 +1,8 @@
 #include "Session.h"
 #include "QtBridgeUi.h"
 
+#include <ardour/plugin_insert.h>
+
 Session::Session(QObject* parent, ARDOUR::Session* session) :
 	QObject(parent),
 	m_session(session),
@@ -34,6 +36,24 @@ Session::Session(QObject* parent, ARDOUR::Session* session) :
 bool Session::dirty() const
 {
 	return m_session->dirty();
+}
+
+Processor* Session::newPlugin(const PluginInfo& info, const QString& preset)
+{
+	ARDOUR::PluginPtr p = info.pluginInfo()->load(*m_session);
+	if(!p)
+		return nullptr;
+
+	if(!preset.isEmpty())
+	{
+		const ARDOUR::Plugin::PresetRecord *pr = p->preset_by_label (preset.toStdString());
+		if (pr)
+			p->load_preset (*pr);
+	}
+
+	auto pluginInsert = std::shared_ptr<ARDOUR::Processor>(new ARDOUR::PluginInsert(*m_session, *m_session, p));
+	// Don't set parent, so QML takes ownership:
+	return Processor::create(nullptr, pluginInsert);
 }
 
 Session::RecordState Session::recordState() const

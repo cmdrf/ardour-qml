@@ -17,6 +17,7 @@ public:
 	PluginInfo(std::shared_ptr<ARDOUR::PluginInfo> pluginInfo) : m_pluginInfo(pluginInfo) {}
 
 	std::shared_ptr<ARDOUR::PluginInfo> pluginInfo() {return m_pluginInfo;}
+	const std::shared_ptr<ARDOUR::PluginInfo> pluginInfo() const {return m_pluginInfo;}
 
 	QString name() const {return QString::fromStdString(m_pluginInfo->name);}
 	QString category() const {return QString::fromStdString(m_pluginInfo->category);}
@@ -25,7 +26,6 @@ public:
 //		ChanCount          n_inputs;
 //		ChanCount          n_outputs;
 //		ARDOUR::PluginType type;
-
 
 private:
 	std::shared_ptr<ARDOUR::PluginInfo> m_pluginInfo;

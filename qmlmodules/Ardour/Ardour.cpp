@@ -1,6 +1,5 @@
 
 #include "Ardour.h"
-#include "ardour/plugin_manager.h"
 #include "pbd/basename.h"
 
 #include <ardour/audio_backend.h>
@@ -23,8 +22,6 @@ class LogReceiver : public Receiver
 protected:
 	void receive (Transmitter::Channel chn, const char* str) final
 	{
-		const char* prefix = "";
-
 		switch (chn)
 		{
 			case Transmitter::Debug:

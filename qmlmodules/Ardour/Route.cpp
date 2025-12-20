@@ -71,4 +71,19 @@ QAbstractItemModel* Route::sends()
 	return m_sends;
 }
 
+int Route::addProcessor(Processor* processor, Ardour::Placement placement)
+{
+	return route()->add_processor(processor->processor(), static_cast<ARDOUR::Placement>(placement));
+}
+
+int Route::addProcessorByIndex(Processor* processor, int index)
+{
+	return route()->add_processor_by_index(processor->processor(), index);
+}
+
+int Route::removeProcessor(Processor* processor)
+{
+	return route()->remove_processor(processor->processor());
+}
+
 

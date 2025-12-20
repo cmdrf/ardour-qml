@@ -1,6 +1,7 @@
 #ifndef ROUTE_H
 #define ROUTE_H
 
+#include "Ardour.h"
 #include "RouteProcessorsModel.h"
 #include "Stripable.h"
 
@@ -60,6 +61,10 @@ public:
 	QAbstractItemModel* processors();
 	QAbstractItemModel* plugins();
 	QAbstractItemModel* sends();
+
+	Q_INVOKABLE int addProcessor(Processor* processor, Ardour::Placement placement);
+	Q_INVOKABLE int addProcessorByIndex(Processor* processor, int index);
+	Q_INVOKABLE int removeProcessor(Processor* processor);
 
 Q_SIGNALS:
 	void activeChanged();
