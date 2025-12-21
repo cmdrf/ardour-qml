@@ -10,7 +10,7 @@ class Track : public Route
 {
 	Q_OBJECT
 	Q_PROPERTY(FreezeState freezeState READ freezeState NOTIFY freezeStateChanged FINAL)
-	Q_PROPERTY(AlignStyle alignStyle READ alignStyle WRITE setAlignStyle NOTIFY alignStyleChanged FINAL)
+	Q_PROPERTY(Ardour::AlignStyle alignStyle READ alignStyle WRITE setAlignStyle NOTIFY alignStyleChanged FINAL)
 	Q_PROPERTY(Playlist* playlist READ playlist CONSTANT)
 
 public:
@@ -22,20 +22,13 @@ public:
 	};
 	Q_ENUM(FreezeState);
 
-	enum AlignStyle
-	{
-		CaptureTime = ARDOUR::CaptureTime,
-		ExistingMaterial = ARDOUR::ExistingMaterial
-	};
-	Q_ENUM(AlignStyle);
-
 	explicit Track(QObject* parent, std::shared_ptr<ARDOUR::Track> track);
 
 	FreezeState freezeState() const;
-	AlignStyle alignStyle() const;
+	Ardour::AlignStyle alignStyle() const;
 	Playlist* playlist() {return &m_playlist;}
 
-	void setAlignStyle(const AlignStyle& newAlignStyle);
+	void setAlignStyle(const Ardour::AlignStyle& newAlignStyle);
 
 Q_SIGNALS:
 	void freezeStateChanged();

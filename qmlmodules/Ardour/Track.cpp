@@ -30,12 +30,12 @@ ARDOUR::Track* Track::track()
 	return static_cast<ARDOUR::Track*>(route().get());
 }
 
-Track::AlignStyle Track::alignStyle() const
+Ardour::AlignStyle Track::alignStyle() const
 {
-	return static_cast<AlignStyle>(track()->alignment_style());
+	return static_cast<Ardour::AlignStyle>(track()->alignment_style());
 }
 
-void Track::setAlignStyle(const AlignStyle& newAlignStyle)
+void Track::setAlignStyle(const Ardour::AlignStyle& newAlignStyle)
 {
 	track()->set_align_style(static_cast<ARDOUR::AlignStyle>(newAlignStyle));
 }

@@ -16,6 +16,8 @@ class Ardour : public QObject
 	Q_PROPERTY(PluginManager* pluginManager READ pluginManager CONSTANT FINAL)
 
 public:
+	// Enums from types.h go here:
+
 	enum Placement
 	{
 		PreFaderPlacement = ARDOUR::PreFader,
@@ -23,7 +25,14 @@ public:
 	};
 	Q_ENUM(Placement);
 
-	explicit Ardour(QObject *parent = nullptr);
+	enum AlignStyle
+	{
+		CaptureTimeAlignStyle = ARDOUR::CaptureTime,
+		ExistingMaterialAlignStyle = ARDOUR::ExistingMaterial
+	};
+	Q_ENUM(AlignStyle);
+
+	explicit Ardour(QObject* parent = nullptr);
 	~Ardour();
 
 	Session* session() const;
