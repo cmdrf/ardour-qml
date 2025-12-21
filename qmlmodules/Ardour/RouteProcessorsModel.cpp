@@ -62,6 +62,50 @@ QHash<int, QByteArray> RouteProcessorsModel::roleNames() const
 	return roles;
 }
 
+bool RouteProcessorsModel::moveRows(const QModelIndex& sourceParent, int sourceRow, int count, const QModelIndex& destinationParent, int destinationChild)
+{
+	// Only top level:
+	if(sourceParent.isValid() || destinationParent.isValid())
+		return false;
+
+	ARDOUR::Route::ProcessorList newOrder;
+
+	// Fill in old processors up to destinationChild:
+	for(int i = 0; i < destinationChild; ++i)
+		newOrder.push_back(m_processors.at(i)->processor());
+
+	// Fill in moved processors:
+	for(int i = 0; i < count; ++i)
+		newOrder.push_back(m_processors.at(sourceRow + i)->processor());
+
+	// Fill in remaining processors:
+	for(int i = destinationChild; i < m_processors.size(); ++i)
+	{
+		if(i < sourceRow || i >= sourceRow + count)
+			newOrder.push_back(m_processors.at(i)->processor());
+	}
+
+	Q_ASSERT(newOrder.size() == m_processors.size());
+
+	return (m_route->reorder_processors(newOrder) == 0);
+}
+
+bool RouteProcessorsModel::removeRows(int row, int count, const QModelIndex& parent)
+{
+	if(parent.isValid())
+		return false;
+
+	if(row == 1)
+		return (m_route->remove_processor(m_processors.at(row)->processor()) == 0);
+	else
+	{
+		ARDOUR::Route::ProcessorList toRemove;
+		for(int i = 0; i < count; ++i)
+			toRemove.push_back(m_processors.at(row + i)->processor());
+		return (m_route->remove_processors(toRemove) == 0);
+	}
+}
+
 void RouteProcessorsModel::handleProcessorChanges(ARDOUR::RouteProcessorChange change)
 {
 	// TODO: More fine-grained

@@ -26,6 +26,9 @@ public:
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 	QHash<int, QByteArray> roleNames() const override;
 
+	bool moveRows(const QModelIndex& sourceParent, int sourceRow, int count, const QModelIndex& destinationParent, int destinationChild) override;
+	bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
+
 private Q_SLOTS:
 	void handleProcessorChanges(ARDOUR::RouteProcessorChange change);
 	void removeProcessor(QObject* processor);
