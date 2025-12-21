@@ -1,7 +1,7 @@
 #ifndef ROUTE_H
 #define ROUTE_H
 
-#include "Ardour.h"
+#include "Enums.h"
 #include "RouteProcessorsModel.h"
 #include "Stripable.h"
 

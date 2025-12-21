@@ -1,39 +1,26 @@
 #ifndef ARDOUR_H
 #define ARDOUR_H
 
-#include "Session.h"
 #include "PluginManager.h"
+#include "Session.h"
 
 #include <QObject>
+#include <QtQml>
 
-class Ardour : public QObject
+class Session;
+
+class ArdourApp : public QObject
 {
 	Q_OBJECT
-	QML_ELEMENT
-	Q_DISABLE_COPY(Ardour)
+	QML_NAMED_ELEMENT(Ardour)
+	Q_DISABLE_COPY(ArdourApp)
 
 	Q_PROPERTY(Session* session READ session NOTIFY sessionChanged FINAL)
 	Q_PROPERTY(PluginManager* pluginManager READ pluginManager CONSTANT FINAL)
 
 public:
-	// Enums from types.h go here:
-
-	enum Placement
-	{
-		PreFaderPlacement = ARDOUR::PreFader,
-		PostFaderPlacement = ARDOUR::PostFader
-	};
-	Q_ENUM(Placement);
-
-	enum AlignStyle
-	{
-		CaptureTimeAlignStyle = ARDOUR::CaptureTime,
-		ExistingMaterialAlignStyle = ARDOUR::ExistingMaterial
-	};
-	Q_ENUM(AlignStyle);
-
-	explicit Ardour(QObject* parent = nullptr);
-	~Ardour();
+	explicit ArdourApp(QObject* parent = nullptr);
+	~ArdourApp();
 
 	Session* session() const;
 	PluginManager* pluginManager() {return m_pluginManager;}

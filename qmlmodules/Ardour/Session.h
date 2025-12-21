@@ -1,10 +1,13 @@
 #ifndef SESSION_H
 #define SESSION_H
 
+#include "Enums.h"
 #include "PluginInfo.h"
 #include "Processor.h"
+#include "RouteGroup.h"
 #include "RouteModel.h"
 #include "CoreSelection.h"
+#include "Track.h"
 
 #include <ardour/session.h>
 
@@ -15,6 +18,9 @@ namespace ARDOUR
 {
 class Session;
 }
+
+class ChanCount;
+class Track;
 
 class Session : public QObject
 {
@@ -60,14 +66,20 @@ public:
 	CoreSelection* selection() {return &m_selection;}
 
 	Q_INVOKABLE Processor* newPlugin(const PluginInfo& info, const QString& preset);
+	Q_INVOKABLE Track* newAudioTrack(int inputChannels, int outputChannels, RouteGroup* routeGroup, int order, Ardour::TrackMode mode = Ardour::NormalTrackMode);
+
+	Q_INVOKABLE Track* newMidiTrack (
+		const ChanCount& input, const ChanCount& output, bool strictIo,
+		PluginInfo* instrument,
+		void* preset, // TODO
+		RouteGroup* routeGroup,
+		int order,
+		Ardour::TrackMode mode,
+		bool inputAutoConnect,
+		bool triggerVisibility = false
+		);
 
 public Q_SLOTS:
-/*
-	void newAudioTrack (int input_channels, int output_channels, RouteGroup* route_group,
-								   uint32_t how_many, string name_template, PresentationInfo::order_t order,
-								   TrackMode mode, bool input_auto_connect,
-								   bool trigger_visibility);
-*/
 	void maybeEnableRecord();
 	void disableRecord();
 	void requestRoll(); // Play

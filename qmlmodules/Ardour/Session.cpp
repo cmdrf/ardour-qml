@@ -1,7 +1,11 @@
+#include "ChanCount.h"
 #include "Session.h"
+#include "Track.h"
 #include "QtBridgeUi.h"
 
 #include <ardour/plugin_insert.h>
+#include <ardour/audio_track.h>
+#include <ardour/midi_track.h>
 
 Session::Session(QObject* parent, ARDOUR::Session* session) :
 	QObject(parent),
@@ -54,6 +58,22 @@ Processor* Session::newPlugin(const PluginInfo& info, const QString& preset)
 	auto pluginInsert = std::shared_ptr<ARDOUR::Processor>(new ARDOUR::PluginInsert(*m_session, *m_session, p));
 	// Don't set parent, so QML takes ownership:
 	return Processor::create(nullptr, pluginInsert);
+}
+
+Track* Session::newAudioTrack(int inputChannels, int outputChannels, RouteGroup* routeGroup, int order, Ardour::TrackMode mode)
+{
+	Q_ASSERT(!routeGroup); // TODO
+
+	ARDOUR::TrackMode aMode = static_cast<ARDOUR::TrackMode>(mode);
+	auto tracks = m_session->new_audio_track(inputChannels, outputChannels, nullptr, 1, std::string(), order, aMode);
+	return new Track(nullptr, tracks.front()); // Don't set parent, so QML takes ownership
+}
+
+Track* Session::newMidiTrack(const ChanCount& input, const ChanCount& output, bool strictIo, PluginInfo* instrument, void* preset, RouteGroup* routeGroup, int order, Ardour::TrackMode mode, bool inputAutoConnect, bool triggerVisibility)
+{
+	ARDOUR::TrackMode aMode = static_cast<ARDOUR::TrackMode>(mode);
+	auto tracks = m_session->new_midi_track(input.chanCount(), output.chanCount(), strictIo, instrument->pluginInfo(), nullptr, nullptr,1, std::string(), order, aMode, inputAutoConnect, triggerVisibility);
+	return new Track(nullptr, tracks.front()); // Don't set parent, so QML takes ownership
 }
 
 Session::RecordState Session::recordState() const

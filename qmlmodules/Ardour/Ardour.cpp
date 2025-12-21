@@ -1,11 +1,11 @@
-
 #include "Ardour.h"
-#include "pbd/basename.h"
+#include "Session.h"
 
 #include <ardour/audio_backend.h>
 #include <ardour/filename_extensions.h>
 #include <ardour/session.h>
 #include <ardour/session_event.h>
+#include <pbd/basename.h>
 #include <pbd/receiver.h>
 #include <pbd/transmitter.h>
 #include <pbd/event_loop.h>
@@ -171,7 +171,7 @@ static bool startEngine (uint32_t sampleRate)
 	return true;
 }
 
-Ardour::Ardour(QObject *parent)
+ArdourApp::ArdourApp(QObject *parent)
 	: QObject{parent}
 {
 	if(qgetenv("ARDOUR_DLL_PATH") == QByteArray())
@@ -195,19 +195,19 @@ Ardour::Ardour(QObject *parent)
 	m_pluginManager = new PluginManager(this);
 }
 
-Ardour::~Ardour()
+ArdourApp::~ArdourApp()
 {
 	closeSession();
 	ARDOUR::AudioEngine::instance ()->stop ();
 	ARDOUR::cleanup ();
 }
 
-Session* Ardour::session() const
+Session* ArdourApp::session() const
 {
 	return m_session;
 }
 
-bool Ardour::createSession(const QString& dir, const QString& snapshotName, uint32_t sampleRate)
+bool ArdourApp::createSession(const QString& dir, const QString& snapshotName, uint32_t sampleRate)
 {
 	delete m_session;
 
@@ -234,7 +234,7 @@ bool Ardour::createSession(const QString& dir, const QString& snapshotName, uint
 	return true;
 }
 
-bool Ardour::loadSession(const QString& dir, const QString& snapshotName)
+bool ArdourApp::loadSession(const QString& dir, const QString& snapshotName)
 {
 	if(!prepareEngine ())
 		return false;
@@ -273,7 +273,7 @@ bool Ardour::loadSession(const QString& dir, const QString& snapshotName)
 	return true;
 }
 
-bool Ardour::loadSession(const QUrl& ardourFile)
+bool ArdourApp::loadSession(const QUrl& ardourFile)
 {
 	QString file = ardourFile.toLocalFile();
 	// Split into directory and filename:
@@ -282,7 +282,7 @@ bool Ardour::loadSession(const QUrl& ardourFile)
 	return loadSession(dir, snapshotName);
 }
 
-void Ardour::closeSession()
+void ArdourApp::closeSession()
 {
 	if(m_session)
 	{

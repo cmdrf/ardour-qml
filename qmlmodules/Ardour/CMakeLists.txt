@@ -34,6 +34,9 @@ qt_add_qml_module(Ardour
 	SOURCES AutomationControl.h AutomationControl.cpp
 	SOURCES PluginInfo.h
 	SOURCES PluginManager.h PluginManager.cpp
+	SOURCES ChanCount.h
+	SOURCES Enums.h
+	SOURCES RouteGroup.h RouteGroup.cpp
 )
 
 qt6_add_shaders(Ardour "Ardour_shaders"
