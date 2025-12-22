@@ -21,6 +21,7 @@ qt_add_qml_module(ExampleProject
 	QML_FILES example/TrackHeader.qml
 	QML_FILES example/Strip.qml
 	QML_FILES example/NewAudioTrackDialog.qml
+	QML_FILES example/MainView.qml
 )
 target_link_libraries(ExampleProject PRIVATE
 	Qt6::Quick

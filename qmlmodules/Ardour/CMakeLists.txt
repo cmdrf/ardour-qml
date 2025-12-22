@@ -37,6 +37,7 @@ qt_add_qml_module(Ardour
 	SOURCES ChanCount.h
 	SOURCES Enums.h
 	SOURCES RouteGroup.h RouteGroup.cpp
+	SOURCES TempoMap.h TempoMap.cpp
 )
 
 qt6_add_shaders(Ardour "Ardour_shaders"
