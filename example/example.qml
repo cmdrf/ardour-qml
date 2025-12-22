@@ -102,24 +102,27 @@ ApplicationWindow {
             width: 180
         }
 
-    ListView {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        model: ardour.session ? ardour.session.tracks : null
-        flickableDirection: Flickable.Flickable.HorizontalAndVerticalFlick
-        contentWidth: 2000
-        delegate: Row {
-            required property var route
-            required property int trackNumber
+        VerticalHeaderView {
+            Layout.fillHeight: true
+            width: 200
 
-            width: 2000
-            height: 60
+            syncView: sheetView
+            model: sheetView.model
+            delegate: TrackHeader {
+                implicitWidth: 200
+                required property int trackNumber
 
-            TrackHeader {
-                route: parent.route
             }
+        }
 
-            Rectangle {
+        TableView {
+            id: sheetView
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            model: ardour.session ? ardour.session.tracks : null
+            clip: true
+            contentWidth: 2000
+            delegate: Rectangle {
                 color: "lightgrey"
                 height: 60
                 width: 2000
@@ -147,6 +150,5 @@ ApplicationWindow {
                 }
             }
         }
-    }
     }
 }
