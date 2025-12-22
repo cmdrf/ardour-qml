@@ -66,16 +66,21 @@ public:
 	CoreSelection* selection() {return &m_selection;}
 
 	Q_INVOKABLE Processor* newPlugin(const PluginInfo& info, const QString& preset);
-	Q_INVOKABLE Track* newAudioTrack(int inputChannels, int outputChannels, RouteGroup* routeGroup, int order, Ardour::TrackMode mode = Ardour::NormalTrackMode);
+	Q_INVOKABLE Track* newAudioTrack(
+			int inputChannels,
+			int outputChannels,
+			RouteGroup* routeGroup = nullptr,
+			int order = ARDOUR::PresentationInfo::max_order,
+			Ardour::TrackMode mode = Ardour::NormalTrackMode);
 
 	Q_INVOKABLE Track* newMidiTrack (
 		const ChanCount& input, const ChanCount& output, bool strictIo,
 		PluginInfo* instrument,
-		void* preset, // TODO
-		RouteGroup* routeGroup,
-		int order,
-		Ardour::TrackMode mode,
-		bool inputAutoConnect,
+		void* preset = nullptr, // TODO
+		RouteGroup* routeGroup = nullptr,
+		int order = ARDOUR::PresentationInfo::max_order,
+		Ardour::TrackMode mode = Ardour::NormalTrackMode,
+		bool inputAutoConnect = true,
 		bool triggerVisibility = false
 		);
 
