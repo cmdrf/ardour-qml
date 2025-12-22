@@ -42,6 +42,9 @@ class Session : public QObject
 	Q_PROPERTY(QAbstractItemModel* tracks READ tracks CONSTANT FINAL)
 	Q_PROPERTY(CoreSelection* selection READ selection CONSTANT FINAL)
 
+	Q_PROPERTY(TimePos currentEnd READ currentEnd WRITE setCurrentEnd NOTIFY currentEndChanged FINAL)
+	Q_PROPERTY(TimePos currentStart READ currentStart WRITE setCurrentStart NOTIFY currentStartChanged FINAL)
+
 public:
 	enum RecordState
 	{
@@ -84,6 +87,12 @@ public:
 		bool triggerVisibility = false
 		);
 
+	TimePos currentEnd() const;
+	void setCurrentEnd(const TimePos& newCurrentEnd);
+
+	TimePos currentStart() const;
+	void setCurrentStart(const TimePos& newCurrentStart);
+
 public Q_SLOTS:
 	void maybeEnableRecord();
 	void disableRecord();
@@ -96,6 +105,8 @@ Q_SIGNALS:
 	void transportSpeedChanged();
 	void playLoopChanged();
 	void transportSampleChanged();
+	void currentEndChanged();
+	void currentStartChanged();
 
 private Q_SLOTS:
 	void transportStateChange();

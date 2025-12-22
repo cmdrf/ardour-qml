@@ -1,5 +1,6 @@
 #include "ChanCount.h"
 #include "Session.h"
+#include "TimePos.h"
 #include "Track.h"
 #include "QtBridgeUi.h"
 
@@ -21,6 +22,8 @@ Session::Session(QObject* parent, ARDOUR::Session* session) :
 	b.connect(m_session->TransportStateChange, this, &Session::transportStateChange);
 	b.connect(m_session->PositionChanged, this, &Session::transportSampleChanged);
 	b.connect(m_session->Located, this, &Session::transportSampleChanged);
+	b.connect(m_session->StartTimeChanged, this, &Session::currentStartChanged);
+	b.connect(m_session->EndTimeChanged, this, &Session::currentEndChanged);
 
 	// Route model:
 	ARDOUR::RouteList routes = *m_session->get_routes();
@@ -129,4 +132,24 @@ void Session::transportStateChange()
 		m_playLoop = playLoop;
 		Q_EMIT playLoopChanged();
 	}
+}
+
+TimePos Session::currentEnd() const
+{
+	return m_session->current_end();
+}
+
+void Session::setCurrentEnd(const TimePos& newCurrentEnd)
+{
+	m_session->set_session_extents(m_session->current_start(), newCurrentEnd);
+}
+
+TimePos Session::currentStart() const
+{
+	return m_session->current_start();
+}
+
+void Session::setCurrentStart(const TimePos& newCurrentStart)
+{
+	m_session->set_session_extents(newCurrentStart, m_session->current_end());
 }

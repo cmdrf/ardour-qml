@@ -121,7 +121,7 @@ ApplicationWindow {
             Layout.fillHeight: true
             model: ardour.session ? ardour.session.tracks : null
             clip: true
-            contentWidth: 2000
+            contentWidth: ardour.session.currentEnd.samples / 5000
             delegate: Rectangle {
                 color: "lightgrey"
                 height: 60
