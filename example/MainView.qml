@@ -4,7 +4,9 @@ import QtQuick.Controls
 import Ardour
 
 GridLayout {
-	property real songWidth: ardour.session.currentEnd.samples / 5000
+	id: mainView
+
+	property real samplesPerPixel: ardour.session.currentEnd.samples / sheetView.contentWidth
 
 	columns: 2
 
@@ -16,13 +18,12 @@ GridLayout {
 	HorizontalHeaderView {
 		Layout.fillWidth: true
 		syncView: sheetView
-		contentWidth: songWidth
 		height: 50
 		clip: true
 		delegate: Rectangle {
 			color: "white"
 			height: 50
-			implicitWidth: songWidth
+			implicitWidth: sheetView.contentWidth
 			Repeater {
 				model: TempoMap
 				delegate: Rectangle {
@@ -35,7 +36,7 @@ GridLayout {
 						visible: type == TempoMap.TempoPointType
 						anchors.left: parent.left
 						anchors.top: parent.top
-						text: noteTypesPerValue
+						text: noteTypesPerMinute
 					}
 
 					Text {
@@ -63,36 +64,63 @@ GridLayout {
 		}
 	}
 
-	TableView {
-		id: sheetView
+	PinchArea {
 		Layout.fillWidth: true
 		Layout.fillHeight: true
-		model: ardour.session ? ardour.session.tracks : null
-		clip: true
-		contentWidth: songWidth
-		delegate: Rectangle {
-			color: "lightgrey"
-			height: 60
-			implicitWidth: songWidth
-			Repeater {
-				model: route.playlist
-				delegate: Rectangle {
-					x: region.position.samples / 5000
-					height: 55
-					width: region.length.samples / 5000
-					color: "blue"
-					radius: 3
 
-					Waveform {
-						anchors.fill: parent
-						audioRegion: region.dataType === Region.AudioType ? region : null
-						visible: region.dataType === Region.AudioType
-					}
 
-					MidiView {
-						anchors.fill: parent
-						visible: region.dataType === Region.MidiType
-						midiRegion: region.dataType === Region.MidiType ? region : null
+		property real initialWidth
+		property real initialHeight
+
+		onPinchStarted: {
+			initialWidth = sheetView.contentWidth;
+			initialHeight = sheetView.contentHeight;
+		}
+		onPinchUpdated: (pinch) => {
+			// adjust content pos due to drag TODO:
+			sheetView.contentX += pinch.previousCenter.x - pinch.center.x;
+			sheetView.contentY += pinch.previousCenter.y - pinch.center.y;
+
+			// resize content:
+			sheetView.resizeContent(initialWidth * pinch.scale, initialHeight /*TODO*/, Qt.point(pinch.center.x + sheetView.contentX, pinch.center.y + sheetView.contentY));
+		}
+		onPinchFinished: {
+			// Move its content within bounds:
+			sheetView.returnToBounds()
+		}
+
+		TableView {
+			id: sheetView
+			anchors.fill: parent
+
+			model: ardour.session ? ardour.session.tracks : null
+			clip: true
+			contentWidth: 5000
+			contentHeight: 1000
+			delegate: Rectangle {
+				color: "lightgrey"
+				height: sheetView.contentHeight / sheetView.rows // TODO
+				implicitWidth: sheetView.contentWidth
+				Repeater {
+					model: route.playlist
+					delegate: Rectangle {
+						x: region.position.samples / mainView.samplesPerPixel
+						height: sheetView.contentHeight / sheetView.rows // TODO
+						width: region.length.samples / mainView.samplesPerPixel
+						color: "blue"
+						radius: 3
+
+						Waveform {
+							anchors.fill: parent
+							audioRegion: region.dataType === Region.AudioType ? region : null
+							visible: region.dataType === Region.AudioType
+						}
+
+						MidiView {
+							anchors.fill: parent
+							visible: region.dataType === Region.MidiType
+							midiRegion: region.dataType === Region.MidiType ? region : null
+						}
 					}
 				}
 			}
