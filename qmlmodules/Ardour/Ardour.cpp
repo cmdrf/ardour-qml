@@ -240,9 +240,9 @@ bool ArdourApp::loadSession(const QString& dir, const QString& snapshotName)
 		return false;
 
 	std::string state = snapshotName.toStdString();
-	std::string dirStr = dir.toStdString();
-	if (state.empty ())
-		state = ARDOUR::Session::get_snapshot_from_instant (dir.toStdString());
+	const std::string dirStr = dir.toStdString();
+	if(state.empty())
+		state = ARDOUR::Session::get_snapshot_from_instant(dirStr);
 
 	if (state.empty ())
 		state = PBD::basename_nosuffix (dirStr);

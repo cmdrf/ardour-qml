@@ -5,7 +5,9 @@
 PresentationInfo::PresentationInfo(QObject* parent, ARDOUR::PresentationInfo& presentationInfo) :
 	m_presentationInfo(presentationInfo),
 	m_order(presentationInfo.order()),
-	m_color(presentationInfo.color())
+	m_color(presentationInfo.color()),
+	m_hidden(presentationInfo.hidden()),
+	m_triggerTrack(presentationInfo.trigger_track())
 {
 	QtBridgeUi& b = QtBridgeUi::instance();
 
