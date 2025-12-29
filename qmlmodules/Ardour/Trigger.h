@@ -27,7 +27,6 @@ class Trigger : public Stateful
 	Q_PROPERTY(bool cueIsolated READ cueIsolated WRITE setCueIsolated NOTIFY cueIsolatedChanged FINAL)
 	Q_PROPERTY(bool allowPatchChanges READ allowPatchChanges WRITE setAllowPatchChanges NOTIFY allowPatchChangesChanged FINAL)
 	Q_PROPERTY(float gain READ gain WRITE setGain NOTIFY gainChanged FINAL)
-//	Q_PROPERTY(StretchMode stretchMode READ stretchMode WRITE setStretchMode NOTIFY stretchModeChanged FINAL)
 	Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged FINAL)
 
 public:
@@ -50,6 +49,9 @@ public:
 	Q_ENUM(StretchMode)
 
 	Trigger(QObject* parent, std::shared_ptr<ARDOUR::Trigger> trigger);
+
+	/// Create Trigger or a subclass from ARDOUR::Trigger or a subclass
+	static Trigger* create(QObject* parent, std::shared_ptr<ARDOUR::Trigger> trigger);
 
 	std::shared_ptr<ARDOUR::Trigger> trigger() {return std::dynamic_pointer_cast<ARDOUR::Trigger>(m_stateful);}
 	const std::shared_ptr<ARDOUR::Trigger> trigger() const {return std::dynamic_pointer_cast<ARDOUR::Trigger>(m_stateful);}
@@ -81,8 +83,6 @@ public:
 	void setAllowPatchChanges(bool newAllowPatchChanges);
 	float gain() const;
 	void setGain(float newGain);
-//	StretchMode stretchMode() const;
-//	void setStretchMode(const StretchMode& newStretchMode);
 	QColor color() const;
 	void setColor(const QColor& newColor);
 
@@ -106,7 +106,6 @@ Q_SIGNALS:
 	void cueIsolatedChanged();
 	void allowPatchChangesChanged();
 	void gainChanged();
-//	void stretchModeChanged();
 	void colorChanged();
 
 private Q_SLOTS:

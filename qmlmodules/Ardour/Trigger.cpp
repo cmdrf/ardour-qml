@@ -1,5 +1,6 @@
 #include "Trigger.h"
 #include "QtBridgeUi.h"
+#include "AudioTrigger.h"
 
 #include <ardour/presentation_info.h>
 
@@ -10,6 +11,13 @@ Trigger::Trigger(QObject* parent, std::shared_ptr<ARDOUR::Trigger> trigger)
 	QtBridgeUi& b = QtBridgeUi::instance();
 
 	b.connect(trigger->PropertyChanged, this, &Trigger::updateProperties);
+}
+
+Trigger* Trigger::create(QObject* parent, std::shared_ptr<ARDOUR::Trigger> trigger)
+{
+	if(auto t = std::dynamic_pointer_cast<ARDOUR::AudioTrigger>(trigger))
+		return new AudioTrigger(parent, t);
+	return new Trigger(parent, trigger);
 }
 
 void Trigger::setArmed(bool newArmed)
@@ -46,8 +54,6 @@ void Trigger::updateProperties(const PBD::PropertyChange& change)
 		Q_EMIT allowPatchChangesChanged();
 	if(change.contains(ARDOUR::Properties::gain))
 		Q_EMIT gainChanged();
-//	if(change.contains(ARDOUR::Properties::stretch_mode))
-//		Q_EMIT stretchModeChanged();
 	if(change.contains(ARDOUR::Properties::color))
 		Q_EMIT colorChanged();
 }
@@ -171,18 +177,6 @@ void Trigger::setGain(float newGain)
 {
 	trigger()->set_gain(newGain);
 }
-
-/*
-Trigger::StretchMode Trigger::stretchMode() const
-{
-	return static_cast<StretchMode>(trigger()->stretch_mode());
-}
-
-void Trigger::setStretchMode(const StretchMode& newStretchMode)
-{
-	trigger()->set_stretch_mode(static_cast<ARDOUR::Trigger::StretchMode>(newStretchMode));
-}
-*/
 
 QColor Trigger::color() const
 {
