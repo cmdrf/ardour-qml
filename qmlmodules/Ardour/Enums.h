@@ -31,6 +31,14 @@ enum TrackMode {
 };
 Q_ENUM_NS(TrackMode);
 
+enum RecordState
+{
+	DisabledRecordState = ARDOUR::Disabled,
+	EnabledRecordState = ARDOUR::Enabled,
+	RecordingRecordState = ARDOUR::Recording
+};
+Q_ENUM_NS(RecordState);
+
 }
 
 #endif // ENUMS_H

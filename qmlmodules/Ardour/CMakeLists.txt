@@ -38,6 +38,9 @@ qt_add_qml_module(Ardour
 	SOURCES Enums.h
 	SOURCES RouteGroup.h RouteGroup.cpp
 	SOURCES TempoMap.h TempoMap.cpp
+	SOURCES TriggerBox.h TriggerBox.cpp
+	SOURCES Trigger.h Trigger.cpp
+	SOURCES FollowAction.h FollowAction.cpp
 )
 
 qt6_add_shaders(Ardour "Ardour_shaders"

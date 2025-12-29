@@ -1,4 +1,5 @@
 #include "Processor.h"
+#include "TriggerBox.h"
 
 Processor::Processor(QObject *parent, std::shared_ptr<ARDOUR::Processor> processor)
 	: SessionObject{parent, processor}
@@ -12,6 +13,8 @@ Processor::Processor(QObject *parent, std::shared_ptr<ARDOUR::Processor> process
 
 Processor* Processor::create(QObject* parent, std::shared_ptr<ARDOUR::Processor> processor)
 {
+	if(auto t = std::dynamic_pointer_cast<ARDOUR::TriggerBox>(processor))
+		return new TriggerBox(parent, t);
 	// TODO: PluginInsert, Send
 	return new Processor(parent, processor);
 }
