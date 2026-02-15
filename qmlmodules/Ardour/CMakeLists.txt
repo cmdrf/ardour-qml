@@ -1,4 +1,4 @@
-find_package(Qt6 REQUIRED COMPONENTS Core Quick ShaderTools Concurrent)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick ShaderTools Concurrent GuiPrivate)
 
 #qt_add_library(Ardour SHARED)
 qt_add_qml_module(Ardour
