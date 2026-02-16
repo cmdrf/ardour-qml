@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Shapes
 import Ardour
 
 GridLayout {
@@ -46,6 +47,23 @@ GridLayout {
 						text: divisionsPerBar + "/" + noteValue
 					}
 				}
+			}
+		}
+
+		Shape {
+			width: 20
+			height: 10
+			x: ardour.session.transportSample / mainView.samplesPerPixel - 10
+			y: 20
+			z: 10
+
+			ShapePath {
+				fillColor: "black"
+				startX: 0
+				startY: 0
+				PathLine { x: 20; y: 0 }
+				PathLine { x: 10; y: 10 }
+				PathLine { x: 0; y: 0 }
 			}
 		}
 	}
@@ -139,6 +157,15 @@ GridLayout {
 						}
 					}
 				}
+			}
+
+			Rectangle {
+				width: 1
+				x: ardour.session.transportSample / mainView.samplesPerPixel - width * 0.5
+				y: 0
+				z: 10
+				height: 10000
+				color: "black"
 			}
 		}
 
