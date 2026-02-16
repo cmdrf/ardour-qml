@@ -101,6 +101,12 @@ GridLayout {
 				color: "lightgrey"
 				height: sheetView.contentHeight / sheetView.rows // TODO
 				implicitWidth: sheetView.contentWidth
+
+				MouseArea {
+					anchors.fill: parent
+					onClicked: selection.clear()
+				}
+
 				Repeater {
 					model: route.playlist
 					delegate: Rectangle { // One region
@@ -124,7 +130,12 @@ GridLayout {
 
 						MouseArea {
 							anchors.fill: parent
-							onClicked: selection.select(region, RegionSelection.Clear | RegionSelection.Select)
+							onClicked: (mouse) => {
+								if(mouse.modifiers & Qt.ShiftModifier)
+									selection.select(region, RegionSelection.Toggle);
+								else
+								   selection.select(region, RegionSelection.ClearAndSelect);
+							}
 						}
 					}
 				}
