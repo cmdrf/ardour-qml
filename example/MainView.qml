@@ -13,25 +13,26 @@ GridLayout {
 
 	Item {
 		width: 200
-		height: 50
+		height: 30
+		implicitHeight: 30
 	}
 
 	HorizontalHeaderView {
 		Layout.fillWidth: true
 		syncView: sheetView
-		height: 50
+		height: 30
+		implicitHeight: 30
 		clip: true
-		delegate: Rectangle {
-			color: "white"
-			height: 50
+		delegate: Item {
+			height: 30
 			implicitWidth: sheetView.contentWidth
 			Repeater {
 				model: TempoMap
 				delegate: Rectangle {
 					width: 1
-					height: 50
+					height: 30
 					color: "green"
-					x: time.samples / 5000
+					x: time.samples / mainView.samplesPerPixel
 
 					Text {
 						visible: type == TempoMap.TempoPointType
@@ -115,8 +116,7 @@ GridLayout {
 			clip: true
 			contentWidth: 5000
 			contentHeight: 1000
-			delegate: Rectangle { // One track or playlist
-				color: "lightgrey"
+			delegate: Item { // One track or playlist
 				height: sheetView.contentHeight / sheetView.rows // TODO
 				implicitWidth: sheetView.contentWidth
 

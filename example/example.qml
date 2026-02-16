@@ -9,6 +9,7 @@ ApplicationWindow {
     height: 720
     visible: true
     title: qsTr("Example Project")
+    color: "#555555"
 
     menuBar: MenuBar {
         Menu {
