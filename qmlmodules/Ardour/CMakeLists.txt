@@ -42,6 +42,7 @@ qt_add_qml_module(Ardour
 	SOURCES Trigger.h Trigger.cpp
 	SOURCES FollowAction.h FollowAction.cpp
 	SOURCES AudioTrigger.h AudioTrigger.cpp
+	SOURCES RegionSelection.h RegionSelection.cpp
 )
 
 qt6_add_shaders(Ardour "Ardour_shaders"

@@ -97,17 +97,17 @@ GridLayout {
 			clip: true
 			contentWidth: 5000
 			contentHeight: 1000
-			delegate: Rectangle {
+			delegate: Rectangle { // One track or playlist
 				color: "lightgrey"
 				height: sheetView.contentHeight / sheetView.rows // TODO
 				implicitWidth: sheetView.contentWidth
 				Repeater {
 					model: route.playlist
-					delegate: Rectangle {
+					delegate: Rectangle { // One region
 						x: region.position.samples / mainView.samplesPerPixel
 						height: sheetView.contentHeight / sheetView.rows // TODO
 						width: region.length.samples / mainView.samplesPerPixel
-						color: "blue"
+						color: selection.regions.contains(region) ? "lightblue" : "blue"
 						radius: 3
 
 						Waveform {
@@ -121,9 +121,18 @@ GridLayout {
 							visible: region.dataType === Region.MidiType
 							midiRegion: region.dataType === Region.MidiType ? region : null
 						}
+
+						MouseArea {
+							anchors.fill: parent
+							onClicked: selection.select(region, RegionSelection.Clear | RegionSelection.Select)
+						}
 					}
 				}
 			}
+		}
+
+		RegionSelection {
+			id: selection
 		}
 	}
 }
