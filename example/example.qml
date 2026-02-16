@@ -49,13 +49,13 @@ ApplicationWindow {
             ToolButton {
                 icon.name: "media-playback-start"
                 icon.color: ardour.session && ardour.session.transportSpeed === 0.0 ? "black" : "green"
-                enabled: ardour.session != null
+                enabled: ardour.session !== null
                 onClicked: ardour.session.requestRoll()
             }
 
             ToolButton {
                 icon.name: "media-playback-stop"
-                enabled: ardour.session != null
+                enabled: ardour.session !== null
                 onClicked: ardour.session.requestStop()
             }
 
