@@ -93,7 +93,7 @@ void WaveformRenderer::createPipeline(QRhiCommandBuffer* cb, QRhiResourceUpdateB
 
 	resourceUpdates->uploadStaticBuffer(m_vbuf.get(), vertexData);
 	QImage dummyImage(1, 1, QImage::Format_RGBA8888);
-	dummyImage.fill(Qt::red);
+	dummyImage.fill(Qt::transparent);
 	resourceUpdates->uploadTexture(m_peakMaxTexture.get(), dummyImage);
 	cb->resourceUpdate(resourceUpdates);
 }

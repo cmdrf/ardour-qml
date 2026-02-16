@@ -31,9 +31,9 @@ void main()
 	pmin = sign(min) * alt_log_meter (coefficient_to_dB (abs(min)));
 
 	if(abs(v_position.y) < 0.01)
-		fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+		fragColor = vec4(1.0, 0.0, 0.0, 1.0); // Center line
 	else if(v_position.y > pmin && v_position.y < pmax)
-		fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+		fragColor = vec4(0.0, 0.0, 0.0, 1.0); // Waveform
 	else
-		fragColor = vec4(0.4, 0.7, 0.8, 1.0);
+		fragColor = vec4(0.0, 0.0, 0.0, 0.0); // Background
 }
