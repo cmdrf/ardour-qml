@@ -60,7 +60,7 @@ GridLayout {
 		delegate: TrackHeader {
 			implicitWidth: 200
 			required property int trackNumber
-
+			onClicked: selection.select(route.playlist, RegionSelection.ClearAndSelect)
 		}
 	}
 

@@ -5,6 +5,8 @@
 
 #include <QObject>
 
+class Playlist;
+
 class RegionSet : public QSet<Region*>
 {
 	Q_GADGET
@@ -43,7 +45,12 @@ public:
 
 public Q_SLOTS:
 	void clear();
+
+	/// Change selection of single region
 	void select(Region* region, SelectionFlags command);
+
+	/// Change selection of all regions within playlist
+	void select(Playlist* playlist, SelectionFlags command);
 
 Q_SIGNALS:
 	void regionsChanged();

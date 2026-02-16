@@ -1,4 +1,5 @@
 #include "RegionSelection.h"
+#include "Playlist.h"
 
 RegionSelection::RegionSelection(QObject *parent)
 	: QObject{parent}
@@ -40,6 +41,56 @@ void RegionSelection::select(Region* region, SelectionFlags command)
 	{
 		removeRegion(region);
 		changed = true;
+	}
+
+	if(changed)
+		Q_EMIT regionsChanged();
+}
+
+void RegionSelection::select(Playlist* playlist, SelectionFlags command)
+{
+	// Change selection for all regions in playlist
+	bool changed = false;
+	if(command & SelectionFlag::Clear && !m_regions.isEmpty())
+	{
+		clearRegions();
+		changed = true;
+	}
+
+	if(command & SelectionFlag::Toggle && !playlist->regions().isEmpty())
+	{
+		for(auto& r: playlist->regions())
+		{
+			if(m_regions.contains(r))
+				removeRegion(r);
+			else
+				addRegion(r);
+		}
+		changed = true;
+	}
+
+	if(command & SelectionFlag::Select)
+	{
+		for(auto& r: playlist->regions())
+		{
+			if(!m_regions.contains(r))
+			{
+				addRegion(r);
+				changed = true;
+			}
+		}
+	}
+
+	if(command & SelectionFlag::Deselect)
+	{
+		for(auto& r: playlist->regions())
+		{
+			if(m_regions.contains(r))
+			{
+				removeRegion(r);
+				changed = true;
+			}
+		}
 	}
 
 	if(changed)

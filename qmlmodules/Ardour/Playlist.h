@@ -12,6 +12,9 @@ class Playlist : public QAbstractListModel
 {
 	Q_OBJECT
 
+	/// Alternative way to access regions
+	Q_PROPERTY(QVector<Region*> regions READ regions NOTIFY regionsChanged FINAL)
+
 public:
 	enum
 	{
@@ -25,6 +28,8 @@ public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 	QHash<int, QByteArray> roleNames() const override;
+
+	const QVector<Region*>& regions() const {return m_regions;}
 
 public Q_SLOTS:
 	void addRegion (Region*, TimePos const & position, float times = 1, bool autoPartition = false);
@@ -58,6 +63,8 @@ public Q_SLOTS:
 //	QSharedPointer<Playlist> copy (std::list<TimelineRange>&);
 	int paste (QSharedPointer<Playlist>, TimePos const & position, float times);
 
+Q_SIGNALS:
+	void regionsChanged();
 
 private Q_SLOTS:
 	void _addRegion(std::weak_ptr<ARDOUR::Region>);

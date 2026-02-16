@@ -3,7 +3,10 @@ import QtQuick.Controls
 import Ardour
 
 Rectangle {
+	id: header
 	required property var route
+
+	signal clicked()
 
 	width: 200
 	height: 60
@@ -12,6 +15,7 @@ Rectangle {
 	MouseArea {
 		anchors.fill: parent
 		onClicked: (mouse) => {
+			header.clicked();
 			ardour.session.selection.selectStripableAndMaybeGroup(route, (mouse.modifiers & Qt.ShiftModifier) ? CoreSelection.SelectionToggle : CoreSelection.SelectionSet)
 		}
 	}
