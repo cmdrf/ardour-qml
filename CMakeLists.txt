@@ -22,6 +22,7 @@ qt_add_qml_module(ExampleProject
 	QML_FILES example/Strip.qml
 	QML_FILES example/NewAudioTrackDialog.qml
 	QML_FILES example/MainView.qml
+	QML_FILES example/RegionDelegate.qml
 )
 target_link_libraries(ExampleProject PRIVATE
 	Qt6::Quick
