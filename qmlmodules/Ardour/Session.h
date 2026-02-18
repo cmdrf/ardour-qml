@@ -22,6 +22,7 @@ class Session;
 class ChanCount;
 class Track;
 
+/// Wrapper around ARDOUR::Session
 class Session : public QObject
 {
     Q_OBJECT
@@ -97,6 +98,7 @@ public Q_SLOTS:
 	void maybeEnableRecord();
 	void disableRecord();
 	void requestRoll(); // Play
+	void requestLocate(qint64 sample);
 	void requestStop();
 
 Q_SIGNALS:

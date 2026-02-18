@@ -23,6 +23,7 @@ GridLayout {
 		height: 30
 		implicitHeight: 30
 		clip: true
+		interactive: false
 		delegate: Item {
 			height: 30
 			implicitWidth: sheetView.contentWidth
@@ -51,6 +52,7 @@ GridLayout {
 			}
 		}
 
+		// Play position triangle
 		Shape {
 			width: 20
 			height: 10
@@ -65,6 +67,19 @@ GridLayout {
 				PathLine { x: 20; y: 0 }
 				PathLine { x: 10; y: 10 }
 				PathLine { x: 0; y: 0 }
+			}
+		}
+
+		// Mouse area to change the play position
+		MouseArea {
+			anchors.fill: parent
+			onPressed: (mouse) => {
+				if(mouse.button === Qt.LeftButton)
+					ardour.session.requestLocate(mouse.x * mainView.samplesPerPixel);
+			}
+			onPositionChanged: (mouse) => {
+				if(mouse.buttons & Qt.LeftButton)
+					ardour.session.requestLocate(mouse.x * mainView.samplesPerPixel);
 			}
 		}
 	}

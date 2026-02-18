@@ -107,6 +107,11 @@ void Session::requestRoll()
 	m_session->request_roll();
 }
 
+void Session::requestLocate(qint64 sample)
+{
+	m_session->request_locate(sample);
+}
+
 void Session::requestStop()
 {
 	m_session->request_stop();
