@@ -49,6 +49,24 @@ QHash<int, QByteArray> TempoMap::roleNames() const
 	return roles;
 }
 
+Beats TempoMap::quartersAt(const TimePos& time) const
+{
+	auto map = Temporal::TempoMap::use();
+	return map->quarters_at(time);
+}
+
+qint64 TempoMap::sampleAt(const Beats& beats) const
+{
+	auto map = Temporal::TempoMap::use();
+	return map->sample_at(beats);
+}
+
+qint64 TempoMap::sampleAt(const TimePos& time) const
+{
+	auto map = Temporal::TempoMap::use();
+	return map->sample_at(time);
+}
+
 void TempoMap::updateMap()
 {
 	beginResetModel();

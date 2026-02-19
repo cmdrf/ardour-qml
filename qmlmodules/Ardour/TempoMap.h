@@ -1,6 +1,7 @@
 #ifndef TEMPOMAP_H
 #define TEMPOMAP_H
 
+#include "Beats.h"
 #include "TimePos.h"
 
 #include <QAbstractListModel>
@@ -34,6 +35,10 @@ public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 	QHash<int, QByteArray> roleNames() const override;
+
+	Q_INVOKABLE Beats quartersAt(const TimePos& time) const;
+	Q_INVOKABLE qint64 sampleAt(const Beats& beats) const;
+	Q_INVOKABLE qint64 sampleAt(const TimePos& time) const;
 
 private Q_SLOTS:
 	void updateMap();
