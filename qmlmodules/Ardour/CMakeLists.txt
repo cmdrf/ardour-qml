@@ -44,6 +44,7 @@ qt_add_qml_module(Ardour
 	SOURCES AudioTrigger.h AudioTrigger.cpp
 	SOURCES RegionSelection.h RegionSelection.cpp
 	SOURCES Beats.h
+	SOURCES GridModel.h GridModel.cpp
 )
 
 qt6_add_shaders(Ardour "Ardour_shaders"

@@ -24,6 +24,7 @@ GridLayout {
 		implicitHeight: 30
 		clip: true
 		interactive: false
+		textRole: ""
 		delegate: Item {
 			height: 30
 			implicitWidth: sheetView.contentWidth
@@ -34,6 +35,7 @@ GridLayout {
 					height: 30
 					color: "green"
 					x: time.samples / mainView.samplesPerPixel
+					z: 1
 
 					Text {
 						visible: type == TempoMap.TempoPointType
@@ -49,6 +51,21 @@ GridLayout {
 						text: divisionsPerBar + "/" + noteValue
 					}
 				}
+			}
+		}
+
+		Repeater {
+			model: GridModel {
+				startSamples: 0
+				endSamples: ardour.session.currentEnd.samples
+			}
+			delegate: Rectangle {
+				required property timepos time
+
+				width: 1
+				height: 30
+				color: "#777777"
+				x: time.samples / mainView.samplesPerPixel
 			}
 		}
 
