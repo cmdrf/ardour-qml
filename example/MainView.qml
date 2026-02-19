@@ -72,14 +72,20 @@ GridLayout {
 
 		// Mouse area to change the play position
 		MouseArea {
+			function roundBeats(samples) {
+				let beats = TempoMap.quartersAt(TimePos.fromSamples(samples));
+				let roundedBeats = beats.roundToBeat();
+				return TempoMap.sampleAt(roundedBeats);
+			}
+
 			anchors.fill: parent
 			onPressed: (mouse) => {
 				if(mouse.button === Qt.LeftButton)
-					ardour.session.requestLocate(mouse.x * mainView.samplesPerPixel);
+					ardour.session.requestLocate(roundBeats(mouse.x * mainView.samplesPerPixel));
 			}
 			onPositionChanged: (mouse) => {
 				if(mouse.buttons & Qt.LeftButton)
-					ardour.session.requestLocate(mouse.x * mainView.samplesPerPixel);
+					ardour.session.requestLocate(roundBeats(mouse.x * mainView.samplesPerPixel));
 			}
 		}
 	}

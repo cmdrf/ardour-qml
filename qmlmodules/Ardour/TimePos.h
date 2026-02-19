@@ -1,11 +1,14 @@
 #ifndef TIMEPOS_H
 #define TIMEPOS_H
 
+#include "Beats.h"
+
 #include <ardour/types.h>
 
 #include <QObject>
 #include <QtQmlIntegration>
 
+/// Wrapper around ARDOUR::timepos_t
 class TimePos
 {
 	Q_GADGET
@@ -28,6 +31,24 @@ public:
 
 private:
 	ARDOUR::timepos_t m_t;
+};
+
+/// Singleton containing functions for constructing TimePos
+class TimePosFuncs : public QObject
+{
+	Q_OBJECT
+	QML_NAMED_ELEMENT(TimePos)
+	QML_SINGLETON
+
+public:
+	/// Construct TimePos from samples
+	Q_INVOKABLE TimePos fromSamples(qint64 samples) {return ARDOUR::timepos_t(samples);}
+
+	/// Construct TimePos from Beats
+	Q_INVOKABLE TimePos fromBeats(const Beats& beats) {return ARDOUR::timepos_t(beats);}
+
+	/// Construct TimePos from ticks
+	Q_INVOKABLE TimePos fromTicks(qint64 ticks) {return ARDOUR::timepos_t::from_ticks(ticks);}
 };
 
 #endif // TIMEPOS_H
