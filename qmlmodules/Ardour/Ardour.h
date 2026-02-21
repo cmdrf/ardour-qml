@@ -13,6 +13,7 @@ class ArdourApp : public QObject
 {
 	Q_OBJECT
 	QML_NAMED_ELEMENT(Ardour)
+	QML_SINGLETON
 	Q_DISABLE_COPY(ArdourApp)
 
 	Q_PROPERTY(Session* session READ session NOTIFY sessionChanged FINAL)

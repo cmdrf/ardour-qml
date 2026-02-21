@@ -48,9 +48,9 @@ ApplicationWindow {
 
             ToolButton {
                 icon.name: "media-playback-start"
-                icon.color: ardour.session && ardour.session.transportSpeed === 0.0 ? "black" : "green"
-                enabled: ardour.session !== null
-                onClicked: ardour.session.requestRoll()
+                icon.color: Ardour.session && Ardour.session.transportSpeed === 0.0 ? "black" : "green"
+                enabled: Ardour.session !== null
+                onClicked: Ardour.session.requestRoll()
             }
 
             ToolButton {
@@ -69,14 +69,10 @@ ApplicationWindow {
         }
     }
 
-    Ardour {
-        id: ardour
-    }
-
     FileDialog {
         id: openDialog
         nameFilters: ["Ardour files (*.ardour)"]
-        onAccepted: ardour.loadSession(openDialog.selectedFile)
+        onAccepted: Ardour.loadSession(openDialog.selectedFile)
     }
 
     FileDialog {
@@ -86,19 +82,19 @@ ApplicationWindow {
             const url = new URL(selectedFile);
             const path = url.pathname;
             const lastItem = path.substring(path.lastIndexOf('/') + 1);
-            ardour.createSession(path, lastItem, 48000)
+            Ardour.createSession(path, lastItem, 48000)
         }
     }
 
     NewAudioTrackDialog {
         id: newAudioTrackDialog
-        onAccepted: ardour.session.newAudioTrack(inputChannels, outputChannels)
+        onAccepted: Ardour.session.newAudioTrack(inputChannels, outputChannels)
     }
 
     RowLayout {
         anchors.fill: parent
         Strip {
-            stripable: ardour.session.selection.firstSelectedStripable
+            stripable: Ardour.session.selection.firstSelectedStripable
             Layout.fillHeight: true
             width: 180
         }

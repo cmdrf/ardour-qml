@@ -6,7 +6,7 @@ import Ardour
 GridLayout {
 	id: mainView
 
-	property real samplesPerPixel: ardour.session.currentEnd.samples / sheetView.contentWidth
+	property real samplesPerPixel: Ardour.session.currentEnd.samples / sheetView.contentWidth
 
 	columns: 2
 
@@ -64,7 +64,7 @@ GridLayout {
 			id: sheetView
 			anchors.fill: parent
 
-			model: ardour.session ? ardour.session.tracks : null
+			model: Ardour.session ? Ardour.session.tracks : null
 			clip: true
 			contentWidth: 5000
 			contentHeight: 1000
@@ -87,7 +87,7 @@ GridLayout {
 
 			Rectangle {
 				width: 1
-				x: ardour.session.transportSample / mainView.samplesPerPixel - width * 0.5
+				x: Ardour.session.transportSample / mainView.samplesPerPixel - width * 0.5
 				y: 0
 				z: 10
 				height: 10000

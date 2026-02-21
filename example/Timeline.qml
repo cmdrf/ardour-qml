@@ -5,7 +5,7 @@ import Ardour
 
 HorizontalHeaderView {
 	required property var sheetView
-	readonly property real samplesPerPixel: ardour.session.currentEnd.samples / contentWidth
+	readonly property real samplesPerPixel: Ardour.session.currentEnd.samples / contentWidth
 
 	syncView: sheetView
 	height: 30
@@ -17,7 +17,7 @@ HorizontalHeaderView {
 		height: 30
 		implicitWidth: contentWidth
 		Repeater {
-			model: ardour.session.tempoMap
+			model: Ardour.session.tempoMap
 			delegate: Rectangle {
 				width: 1
 				height: 30
@@ -45,7 +45,7 @@ HorizontalHeaderView {
 	Repeater {
 		model: GridModel {
 			startSamples: 0
-			endSamples: ardour.session.currentEnd.samples
+			endSamples: Ardour.session.currentEnd.samples
 		}
 		delegate: Rectangle {
 			required property timepos time
@@ -70,7 +70,7 @@ HorizontalHeaderView {
 	Shape {
 		width: 20
 		height: 10
-		x: ardour.session.transportSample / samplesPerPixel - 10
+		x: Ardour.session.transportSample / samplesPerPixel - 10
 		y: 20
 		z: 10
 
@@ -87,19 +87,19 @@ HorizontalHeaderView {
 	// Mouse area to change the play position
 	MouseArea {
 		function roundBeats(samples) {
-			let beats = ardour.session.tempoMap.quartersAt(TimePos.fromSamples(samples));
+			let beats = Ardour.session.tempoMap.quartersAt(TimePos.fromSamples(samples));
 			let roundedBeats = beats.roundToBeat();
-			return ardour.session.tempoMap.sampleAt(roundedBeats);
+			return Ardour.session.tempoMap.sampleAt(roundedBeats);
 		}
 
 		anchors.fill: parent
 		onPressed: (mouse) => {
 			if(mouse.button === Qt.LeftButton)
-				ardour.session.requestLocate(roundBeats(mouse.x * samplesPerPixel));
+				Ardour.session.requestLocate(roundBeats(mouse.x * samplesPerPixel));
 		}
 		onPositionChanged: (mouse) => {
 			if(mouse.buttons & Qt.LeftButton)
-				ardour.session.requestLocate(roundBeats(mouse.x * samplesPerPixel));
+				Ardour.session.requestLocate(roundBeats(mouse.x * samplesPerPixel));
 		}
 	}
 }
