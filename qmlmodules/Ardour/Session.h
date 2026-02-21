@@ -80,6 +80,8 @@ public:
 	TempoMap* tempoMap() {return &m_tempoMap;}
 
 	Q_INVOKABLE Processor* newPlugin(const PluginInfo& info, const QString& preset);
+
+	/** @param routeGroup Route group. Can be null. */
 	Q_INVOKABLE Track* newAudioTrack(
 			int inputChannels,
 			int outputChannels,
