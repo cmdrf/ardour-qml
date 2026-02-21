@@ -45,6 +45,7 @@ qt_add_qml_module(Ardour
 	SOURCES RegionSelection.h RegionSelection.cpp
 	SOURCES Beats.h
 	SOURCES GridModel.h GridModel.cpp
+	SOURCES Location.h Location.cpp
 )
 
 qt6_add_shaders(Ardour "Ardour_shaders"
