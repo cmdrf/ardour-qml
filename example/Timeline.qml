@@ -29,7 +29,13 @@ HorizontalHeaderView {
 					visible: type == TempoMap.TempoPointType
 					anchors.left: parent.left
 					anchors.top: parent.top
-					text: noteTypesPerMinute
+					text: {
+						// Print at most one decimal place:
+						let bpmStr = noteTypesPerMinute.toFixed(1);
+						if(bpmStr.endsWith(".0"))
+							bpmStr = bpmStr.slice(0, -2);
+						bpmStr;
+					}
 				}
 
 				Text {
