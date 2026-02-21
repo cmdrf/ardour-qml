@@ -49,11 +49,20 @@ HorizontalHeaderView {
 		}
 		delegate: Rectangle {
 			required property timepos time
+			required property int bbtBars
+			required property int bbtBeats
 
 			width: 1
 			height: 30
 			color: "#777777"
 			x: time.samples / samplesPerPixel
+
+			Text {
+				anchors.left: parent.right
+				anchors.top: parent.top
+				text: bbtBars
+				visible: bbtBeats == 1
+			}
 		}
 	}
 

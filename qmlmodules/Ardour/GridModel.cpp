@@ -25,18 +25,25 @@ QVariant GridModel::data(const QModelIndex& index, int role) const
 {
 	if(!index.isValid())
 		return QVariant();
+	auto point = m_points.at(index.row());
 	if(role == TimeRole)
-	{
-		const auto time = m_points.at(index.row()).time();
-		return QVariant::fromValue(TimePos(time));
-	}
+		return QVariant::fromValue(TimePos(point.time()));
+	else if(role == BbtBarsRole)
+		return point.bbt().bars;
+	else if(role == BbtBeatsRole)
+		return point.bbt().beats;
+	else if(role == BbtTicksRole)
+		return point.bbt().ticks;
 	return QVariant();
 }
 
 QHash<int, QByteArray> GridModel::roleNames() const
 {
 	static const QHash<int, QByteArray> roles{
-		{TimeRole, "time"}
+		{TimeRole, "time"},
+		{BbtBarsRole, "bbtBars"},
+		{BbtBeatsRole, "bbtBeats"},
+		{BbtTicksRole, "bbtTicks"}
 	};
 	return roles;
 }
@@ -88,7 +95,7 @@ void GridModel::updateMap()
 		m_actualStartSamples = qMax(m_startSamples - length, 0);
 		m_actualEndSamples = m_endSamples + length;
 
-		auto map = Temporal::TempoMap::use();
+		auto map = Temporal::TempoMap::fetch();
 		const Temporal::superclock_t startTime = Temporal::samples_to_superclock(m_actualStartSamples, TEMPORAL_SAMPLE_RATE);
 		const Temporal::superclock_t endTime = Temporal::samples_to_superclock(m_actualEndSamples, TEMPORAL_SAMPLE_RATE);
 		map->get_grid(m_points, startTime, endTime, m_barModulo, m_beatDivision);

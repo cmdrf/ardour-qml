@@ -23,7 +23,10 @@ class GridModel : public QAbstractListModel
 public:
 	enum
 	{
-		TimeRole = Qt::UserRole
+		TimeRole = Qt::UserRole,
+		BbtBarsRole,
+		BbtBeatsRole,
+		BbtTicksRole
 	};
 
 	explicit GridModel(QObject *parent = nullptr);
