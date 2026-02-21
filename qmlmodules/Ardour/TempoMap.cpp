@@ -34,6 +34,8 @@ QVariant TempoMap::data(const QModelIndex& index, int role) const
 		return e.noteValue;
 	case DivisionsPerBarRole:
 		return e.divisionsPerBar;
+	case NoteTypesPerMinuteRole:
+		return e.noteTypesPerMinute;
 	}
 	return QVariant();
 }
@@ -52,20 +54,53 @@ QHash<int, QByteArray> TempoMap::roleNames() const
 
 Beats TempoMap::quartersAt(const TimePos& time) const
 {
-	auto map = Temporal::TempoMap::use();
+	auto map = Temporal::TempoMap::fetch();
 	return map->quarters_at(time);
 }
 
 qint64 TempoMap::sampleAt(const Beats& beats) const
 {
-	auto map = Temporal::TempoMap::use();
+	auto map = Temporal::TempoMap::fetch();
 	return map->sample_at(beats);
 }
 
 qint64 TempoMap::sampleAt(const TimePos& time) const
 {
-	auto map = Temporal::TempoMap::use();
+	auto map = Temporal::TempoMap::fetch();
 	return map->sample_at(time);
+}
+
+void TempoMap::removeTime(const TimePos& pos, const TimeCount& duration)
+{
+	Q_ASSERT(m_session);
+
+	m_session->begin_reversible_command("remove time");
+	auto map = Temporal::TempoMap::write_copy();
+	map->remove_time(pos, duration);
+	Temporal::TempoMap::update(map);
+	m_session->commit_reversible_command();
+}
+
+void TempoMap::setTempo(const Tempo& tempo, const TimePos& timePos)
+{
+	Q_ASSERT(m_session);
+
+	m_session->begin_reversible_command("set tempo");
+	auto map = Temporal::TempoMap::write_copy();
+	map->set_tempo(tempo, timePos);
+	Temporal::TempoMap::update(map);
+	m_session->commit_reversible_command();
+}
+
+void TempoMap::setMeter(const Meter& meter, const TimePos& timePos)
+{
+	Q_ASSERT(m_session);
+
+	m_session->begin_reversible_command("set meter");
+	auto map = Temporal::TempoMap::write_copy();
+	map->set_meter(meter, timePos);
+	Temporal::TempoMap::update(map);
+	m_session->commit_reversible_command();
 }
 
 void TempoMap::updateMap()
@@ -73,7 +108,7 @@ void TempoMap::updateMap()
 	beginResetModel();
 	m_entries.clear();
 	Temporal::TempoMap::Metrics metrics;
-	auto map = Temporal::TempoMap::use();
+	auto map = Temporal::TempoMap::fetch();
 	map->get_metrics(metrics);
 	m_entries.reserve(metrics.size());
 

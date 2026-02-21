@@ -109,6 +109,29 @@ public:
 	Q_INVOKABLE qint64 sampleAt(const Beats& beats) const;
 	Q_INVOKABLE qint64 sampleAt(const TimePos& time) const;
 
+	Q_INVOKABLE void removeTime(const TimePos& pos, const TimeCount& duration);
+
+	/// Add new or overwrite existing tempo change at timePos
+	/** Example:
+	@code
+	MouseArea {
+		function roundBeats(samples) {
+			let beats = TempoMap.quartersAt(TimePos.fromSamples(samples));
+			let roundedBeats = beats.roundToBeat();
+			return TempoMap.sampleAt(roundedBeats);
+		}
+
+		onClicked: (mouse) => {
+			TempoMap.setTempo(TempoFuncs.tempo(Math.random() * 100 + 100, 4), TimePos.fromSamples(roundBeats(mouse.x * samplesPerPixel)));
+		}
+	}
+	@endcode
+	*/
+	Q_INVOKABLE void setTempo(const Tempo& tempo, const TimePos& timePos);
+
+	/// Add new or overwrite existing meter change at timePos
+	Q_INVOKABLE void setMeter(const Meter& meter, const TimePos& timePos);
+
 private Q_SLOTS:
 	void updateMap();
 
