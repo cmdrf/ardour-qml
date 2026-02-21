@@ -13,8 +13,8 @@ Session::Session(QObject* parent, ARDOUR::Session* session) :
 	m_session(session),
 	m_transportSpeed(session->transport_speed()),
 	m_playLoop(session->get_play_loop()),
-	m_selection(this, session->selection())
-
+	m_selection(this, session->selection()),
+	m_tempoMap(this, session)
 {
 	QtBridgeUi& b = QtBridgeUi::instance();
 	b.connect(m_session->DirtyChanged, this, &Session::dirtyChanged);

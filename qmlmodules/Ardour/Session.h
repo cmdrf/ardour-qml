@@ -7,6 +7,7 @@
 #include "RouteGroup.h"
 #include "RouteModel.h"
 #include "CoreSelection.h"
+#include "TempoMap.h"
 #include "Track.h"
 
 #include <ardour/session.h>
@@ -46,6 +47,8 @@ class Session : public QObject
 	Q_PROPERTY(TimePos currentEnd READ currentEnd WRITE setCurrentEnd NOTIFY currentEndChanged FINAL)
 	Q_PROPERTY(TimePos currentStart READ currentStart WRITE setCurrentStart NOTIFY currentStartChanged FINAL)
 
+	Q_PROPERTY(TempoMap* tempoMap READ tempoMap CONSTANT FINAL)
+
 public:
 	enum RecordState
 	{
@@ -56,6 +59,8 @@ public:
 	Q_ENUM(RecordState);
 
 	Session(QObject* parent, ARDOUR::Session* session);
+
+	ARDOUR::Session* session() {return m_session;}
 
 	bool dirty() const;
 
@@ -68,6 +73,7 @@ public:
 	RouteModel* routes() {return &m_routes;}
 	QAbstractItemModel* tracks() {return &m_tracks;}
 	CoreSelection* selection() {return &m_selection;}
+	TempoMap* tempoMap() {return &m_tempoMap;}
 
 	Q_INVOKABLE Processor* newPlugin(const PluginInfo& info, const QString& preset);
 	Q_INVOKABLE Track* newAudioTrack(
@@ -121,6 +127,7 @@ private:
 	RouteModel m_routes;
 	QSortFilterProxyModel m_tracks;
 	CoreSelection m_selection;
+	TempoMap m_tempoMap;
 
 	/** Timer to regularly update the transport position during play. */
 	QTimer m_transportPositionQueryTimer;

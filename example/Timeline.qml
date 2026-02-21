@@ -17,7 +17,7 @@ HorizontalHeaderView {
 		height: 30
 		implicitWidth: contentWidth
 		Repeater {
-			model: TempoMap
+			model: ardour.session.tempoMap
 			delegate: Rectangle {
 				width: 1
 				height: 30
@@ -78,9 +78,9 @@ HorizontalHeaderView {
 	// Mouse area to change the play position
 	MouseArea {
 		function roundBeats(samples) {
-			let beats = TempoMap.quartersAt(TimePos.fromSamples(samples));
+			let beats = ardour.session.tempoMap.quartersAt(TimePos.fromSamples(samples));
 			let roundedBeats = beats.roundToBeat();
-			return TempoMap.sampleAt(roundedBeats);
+			return ardour.session.tempoMap.sampleAt(roundedBeats);
 		}
 
 		anchors.fill: parent

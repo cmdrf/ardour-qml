@@ -3,8 +3,9 @@
 
 #include <temporal/tempo.h>
 
-TempoMap::TempoMap(QObject *parent)
-	: QAbstractListModel{parent}
+TempoMap::TempoMap(QObject *parent, ARDOUR::Session* session) :
+	QAbstractListModel{parent},
+	m_session(session)
 {
 	QtBridgeUi& b = QtBridgeUi::instance();
 
