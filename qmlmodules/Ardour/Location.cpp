@@ -3,8 +3,9 @@
 
 #include <ardour/location.h>
 
-Location::Location(QObject* parent, std::shared_ptr<ARDOUR::Location> location)
-    : StatefulDestructible{parent, location}
+Location::Location(QObject* parent, std::shared_ptr<ARDOUR::Location> location) :
+	StatefulDestructible{parent, location},
+	m_previousFlags{location->flags()}
 {
     QtBridgeUi& b = QtBridgeUi::instance();
 
@@ -23,15 +24,32 @@ Location::Location(QObject* parent, std::shared_ptr<ARDOUR::Location> location)
 
 void Location::onFlagsChanged()
 {
-    // FlagsChanged is a coarse signal that may indicate any of several boolean properties changed.
-    Q_EMIT markChanged();
-    Q_EMIT autoPunchChanged();
-    Q_EMIT autoLoopChanged();
-    Q_EMIT hiddenChanged();
-    Q_EMIT cdMarkerChanged();
-    Q_EMIT rangeMarkerChanged();
-    Q_EMIT skipChanged();
-    Q_EMIT skippingChanged();
-    Q_EMIT clockOriginChanged();
-    Q_EMIT sectionChanged();
+	// Emit only the signals for flags that actually changed
+	const ARDOUR::Location::Flags oldf = m_previousFlags;
+
+	if(static_cast<bool>(oldf & ARDOUR::Location::IsMark) != location()->is_mark())
+		Q_EMIT markChanged();
+	if(static_cast<bool>(oldf & ARDOUR::Location::IsAutoPunch) != location()->is_auto_punch())
+		Q_EMIT autoPunchChanged();
+	if(static_cast<bool>(oldf & ARDOUR::Location::IsAutoLoop) != location()->is_auto_loop())
+		Q_EMIT autoLoopChanged();
+	if(static_cast<bool>(oldf & ARDOUR::Location::IsHidden) != location()->is_hidden())
+		Q_EMIT hiddenChanged();
+	if(static_cast<bool>(oldf & ARDOUR::Location::IsCDMarker) != location()->is_cd_marker())
+		Q_EMIT cdMarkerChanged();
+	if(static_cast<bool>(oldf & ARDOUR::Location::IsRangeMarker) != location()->is_range_marker())
+		Q_EMIT rangeMarkerChanged();
+	if(static_cast<bool>(oldf & ARDOUR::Location::IsSkip) != location()->is_skip())
+		Q_EMIT skipChanged();
+
+	bool oldSkipping = (oldf & ARDOUR::Location::IsSkip) && (oldf & ARDOUR::Location::IsSkipping);
+	if(oldSkipping != location()->is_skipping())
+		Q_EMIT skippingChanged();
+
+	if(static_cast<bool>(oldf & ARDOUR::Location::IsClockOrigin) != location()->is_clock_origin())
+		Q_EMIT clockOriginChanged();
+	if(static_cast<bool>(oldf & ARDOUR::Location::IsSection) != location()->is_section())
+		Q_EMIT sectionChanged();
+
+	m_previousFlags = location()->flags();
 }

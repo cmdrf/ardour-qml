@@ -109,6 +109,7 @@ private Q_SLOTS:
 	void onFlagsChanged();
 
 private:
+	ARDOUR::Location::Flags m_previousFlags;
 };
 
 #endif // LOCATION_H
