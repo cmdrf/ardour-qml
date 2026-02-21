@@ -21,6 +21,7 @@ class Session;
 }
 
 class ChanCount;
+class Location;
 class Track;
 
 /// Wrapper around ARDOUR::Session
@@ -48,6 +49,9 @@ class Session : public QObject
 	Q_PROPERTY(TimePos currentStart READ currentStart WRITE setCurrentStart NOTIFY currentStartChanged FINAL)
 
 	Q_PROPERTY(TempoMap* tempoMap READ tempoMap CONSTANT FINAL)
+
+	Q_PROPERTY(Location* autoLoopLocation READ autoLoopLocation NOTIFY autoLoopLocationChanged FINAL)
+	Q_PROPERTY(Location* autoPunchLocation READ autoPunchLocation NOTIFY autoPunchLocationChanged FINAL)
 
 public:
 	enum RecordState
@@ -100,6 +104,12 @@ public:
 	TimePos currentStart() const;
 	void setCurrentStart(const TimePos& newCurrentStart);
 
+	Location* autoLoopLocation();
+	Q_INVOKABLE void setAutoLoopLocation(const TimePos& start, const TimePos& end);
+
+	Location* autoPunchLocation();
+	Q_INVOKABLE void setAutoPunchLocation(const TimePos& start, const TimePos& end);
+
 public Q_SLOTS:
 	void maybeEnableRecord();
 	void disableRecord();
@@ -115,9 +125,13 @@ Q_SIGNALS:
 	void transportSampleChanged();
 	void currentEndChanged();
 	void currentStartChanged();
+	void autoLoopLocationChanged();
+	void autoPunchLocationChanged();
 
 private Q_SLOTS:
 	void transportStateChange();
+	void onAutoLoopLocationChanged();
+	void onAutoPunchLocationChanged();
 
 private:
 	ARDOUR::Session* m_session;
@@ -131,6 +145,9 @@ private:
 
 	/** Timer to regularly update the transport position during play. */
 	QTimer m_transportPositionQueryTimer;
+
+	Location* m_autoLoopLocation = nullptr;
+	Location* m_autoPunchLocation = nullptr;
 };
 
 #endif // SESSION_H

@@ -3,8 +3,9 @@
 
 #include <ardour/location.h>
 
-Location::Location(QObject* parent, std::shared_ptr<ARDOUR::Location> location) :
-	StatefulDestructible{parent, location},
+Location::Location(QObject* parent, ARDOUR::Location* location) :
+	QObject{parent},
+	m_location{location},
 	m_previousFlags{location->flags()}
 {
     QtBridgeUi& b = QtBridgeUi::instance();

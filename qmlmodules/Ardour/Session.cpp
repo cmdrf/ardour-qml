@@ -1,4 +1,5 @@
 #include "ChanCount.h"
+#include "Location.h"
 #include "Session.h"
 #include "TimePos.h"
 #include "Track.h"
@@ -24,6 +25,10 @@ Session::Session(QObject* parent, ARDOUR::Session* session) :
 	b.connect(m_session->Located, this, &Session::transportSampleChanged);
 	b.connect(m_session->StartTimeChanged, this, &Session::currentStartChanged);
 	b.connect(m_session->EndTimeChanged, this, &Session::currentEndChanged);
+
+	// Locations:
+	b.connect(m_session->auto_loop_location_changed, this, &Session::onAutoLoopLocationChanged);
+	b.connect(m_session->auto_punch_location_changed, this, &Session::onAutoPunchLocationChanged);
 
 	// Route model:
 	ARDOUR::RouteList routes = *m_session->get_routes();
@@ -92,6 +97,62 @@ Session::RecordState Session::recordState() const
 	}
 }
 
+Location* Session::autoLoopLocation()
+{
+	if(m_autoLoopLocation)
+		return m_autoLoopLocation;
+
+	auto autoLoopLocation = m_session->locations()->auto_loop_location();
+	// If Ardour has loop location, but we don't create wrapper:
+	if(autoLoopLocation)
+		m_autoLoopLocation = new Location(this, autoLoopLocation);
+	return m_autoLoopLocation;
+}
+
+void Session::setAutoLoopLocation(const TimePos& start, const TimePos& end)
+{
+	ARDOUR::Location* existingLocation = m_session->locations()->auto_loop_location();
+	if(existingLocation == nullptr)
+	{
+		ARDOUR::Location* newLocation = new ARDOUR::Location(*m_session, start, end, "Loop",  ARDOUR::Location::IsAutoLoop);
+		m_session->locations()->add(newLocation, true);
+		m_session->set_auto_loop_location(newLocation);
+	}
+	else
+	{
+		existingLocation->set_hidden(false, this);
+		existingLocation->set(start, end);
+	}
+}
+
+Location* Session::autoPunchLocation()
+{
+	if(m_autoPunchLocation)
+		return m_autoPunchLocation;
+
+	auto autoPunchLocation = m_session->locations()->auto_punch_location();
+	// If Ardour has loop location, but we don't create wrapper:
+	if(autoPunchLocation)
+		m_autoPunchLocation = new Location(this, autoPunchLocation);
+	return m_autoPunchLocation;
+}
+
+void Session::setAutoPunchLocation(const TimePos& start, const TimePos& end)
+{
+	ARDOUR::Location* existingLocation = m_session->locations()->auto_punch_location();
+	if(existingLocation == nullptr)
+	{
+		ARDOUR::Location* newLocation = new ARDOUR::Location(*m_session, start, end, "Punch",  ARDOUR::Location::IsAutoPunch);
+		m_session->locations()->add(newLocation, true);
+		m_session->set_auto_punch_location(newLocation);
+	}
+	else
+	{
+		existingLocation->set_hidden(false, this);
+		existingLocation->set(start, end);
+	}
+}
+
 void Session::maybeEnableRecord()
 {
 	m_session->maybe_enable_record();
@@ -137,6 +198,49 @@ void Session::transportStateChange()
 		m_playLoop = playLoop;
 		Q_EMIT playLoopChanged();
 	}
+}
+
+/// Checks if the location pointer changed and updates the wrapper accordingly.
+/** @returns true if the pointer changed, false if only properties changed. */
+static bool checkLocation(Location*& locationWrapper, ARDOUR::Location* ardourLocation)
+{
+	if(ardourLocation == nullptr && locationWrapper != nullptr) // Check if it was removed
+	{
+		delete locationWrapper;
+		locationWrapper = nullptr;
+		return true;
+	}
+	if(ardourLocation != nullptr && locationWrapper == nullptr)
+	{
+		// Location creation deferred to Session::autoLoopLocation() or Session::autoPunchLocation()
+		return true;
+	}
+	if(locationWrapper != nullptr && locationWrapper->location() != ardourLocation) // Check if pointer changed
+	{
+		QObject* parent = locationWrapper->parent();
+		delete locationWrapper;
+		locationWrapper = new Location(parent, ardourLocation);
+		return true;
+	}
+	return false;
+}
+
+void Session::onAutoLoopLocationChanged()
+{
+	/* This gets called on every change of the auto loop location, but we are only interested if
+	   the location pointer itself changed. Location properties are handled by Location already. */
+	auto autoLoopLocation = m_session->locations()->auto_loop_location();
+	if(checkLocation(m_autoLoopLocation, autoLoopLocation))
+		Q_EMIT autoLoopLocationChanged();
+}
+
+void Session::onAutoPunchLocationChanged()
+{
+	/* This gets called on every change of the auto punch location, but we are only interested if
+	   the location pointer itself changed. Location properties are handled by Location already. */
+	auto autoPunchLocation = m_session->locations()->auto_punch_location();
+	if(checkLocation(m_autoPunchLocation, autoPunchLocation))
+		Q_EMIT autoPunchLocationChanged();
 }
 
 TimePos Session::currentEnd() const

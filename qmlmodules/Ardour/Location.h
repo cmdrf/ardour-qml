@@ -1,7 +1,6 @@
 #ifndef LOCATION_H
 #define LOCATION_H
 
-#include "StatefulDestructible.h"
 #include "TimePos.h"
 
 #include <ardour/location.h>
@@ -9,7 +8,10 @@
 #include <QObject>
 #include <QtQmlIntegration>
 
-class Location : public StatefulDestructible
+/** Although ARDOUR::Location is a PBD::StatefulDestructible, only raw pointers are passed around.
+ARDOUR::Locations takes ownership of them and deletes them without warning. Therefore, we cannot derive
+from our StatefulDestructible, because its shared_ptr would cause double frees. */
+class Location : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
@@ -36,10 +38,10 @@ class Location : public StatefulDestructible
     Q_PROPERTY(bool section READ isSection WRITE setSection NOTIFY sectionChanged FINAL)
 
 public:
-    Location(QObject* parent, std::shared_ptr<ARDOUR::Location> location);
+	Location(QObject* parent, ARDOUR::Location* location);
 
-    std::shared_ptr<ARDOUR::Location> location() { return std::dynamic_pointer_cast<ARDOUR::Location>(m_stateful); }
-    const std::shared_ptr<ARDOUR::Location> location() const { return std::dynamic_pointer_cast<ARDOUR::Location>(m_stateful); }
+	ARDOUR::Location* location() { return m_location; }
+	const ARDOUR::Location* location() const { return m_location; }
 
     QString name() const { return QString::fromStdString(location()->name()); }
     void setName(const QString& n) { location()->set_name(n.toStdString()); }
@@ -109,6 +111,7 @@ private Q_SLOTS:
 	void onFlagsChanged();
 
 private:
+	ARDOUR::Location* m_location;
 	ARDOUR::Location::Flags m_previousFlags;
 };
 
