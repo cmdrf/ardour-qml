@@ -90,46 +90,10 @@ private:
 	Glib::Threads::RWLock  request_buffer_map_lock;
 };
 
-static bool prepareEngine()
+static bool prepareEngine(const QString& backend)
 {
 	ARDOUR::AudioEngine* engine = ARDOUR::AudioEngine::instance();
-
-	auto availableBackends = engine->available_backends();
-	std::string selectedBackend = "None (Dummy)";
-	qInfo("Available backends:");
-	for(const auto& backend: availableBackends)
-	{
-		qInfo() << backend->name;
-		if(strcmp(backend->name, "None (Dummy)") != 0)
-			selectedBackend = backend->name;
-	}
-
-	if(!engine->current_backend())
-	{
-		if(!engine->set_backend(selectedBackend, "Unit-Test", ""))
-		{
-			qWarning() << "Cannot create Audio/MIDI engine\n";
-			engine->discover_backends();
-			auto backends = engine->available_backends();
-			qInfo("Available backends:");
-			for(auto& backend: backends)
-			{
-				qInfo() << backend->name;
-			}
-			return false;
-		}
-	}
-
-	if (!engine->current_backend ())
-	{
-		qWarning() << "Cannot create Audio/MIDI engine\n";
-		return false;
-	}
-
-	if (engine->running ()) {
-		engine->stop ();
-	}
-	return true;
+	return engine->set_backend(backend.toStdString(), "ardour-qml", "") != nullptr;
 }
 
 static bool startEngine (uint32_t sampleRate)
@@ -193,13 +157,20 @@ ArdourApp::ArdourApp(QObject *parent)
 	logReceiver.listen_to (PBD::fatal);
 
 	m_pluginManager = new PluginManager(this);
+
+	// Select non-dummy backend if available:
+	auto backends = availableBackends();
+	backends.removeIf([](auto a){return a == "None (Dummy)";});
+	if(backends.isEmpty())
+		m_selectedBackend = "None (Dummy)";
+	else
+		m_selectedBackend = backends.front();
 }
 
 ArdourApp::~ArdourApp()
 {
 	closeSession();
-	ARDOUR::AudioEngine::instance ()->stop ();
-	ARDOUR::cleanup ();
+	ARDOUR::cleanup();
 }
 
 Session* ArdourApp::session() const
@@ -211,7 +182,7 @@ bool ArdourApp::createSession(const QString& dir, const QString& snapshotName, u
 {
 	delete m_session;
 
-	if(!prepareEngine())
+	if(!prepareEngine(m_selectedBackend))
 		return false;
 
 	auto s = QDir(dir).filePath(snapshotName + ARDOUR::statefile_suffix);
@@ -236,7 +207,7 @@ bool ArdourApp::createSession(const QString& dir, const QString& snapshotName, u
 
 bool ArdourApp::loadSession(const QString& dir, const QString& snapshotName)
 {
-	if(!prepareEngine ())
+	if(!prepareEngine(m_selectedBackend))
 		return false;
 
 	std::string state = snapshotName.toStdString();
@@ -288,6 +259,32 @@ void ArdourApp::closeSession()
 	{
 		delete m_session;
 		m_session = nullptr;
+		ARDOUR::AudioEngine::instance()->stop();
 		Q_EMIT sessionChanged();
 	}
+}
+
+QStringList ArdourApp::availableBackends() const
+{
+	QStringList backendNames;
+	ARDOUR::AudioEngine* engine = ARDOUR::AudioEngine::instance ();
+	auto backends = engine->available_backends();
+
+	for(auto& backend: backends)
+		backendNames.append(backend->name);
+
+	return backendNames;
+}
+
+QString ArdourApp::selectedBackend() const
+{
+	return m_selectedBackend;
+}
+
+void ArdourApp::setSelectedBackend(const QString& newSelectedBackend)
+{
+	if(newSelectedBackend == m_selectedBackend)
+		return;
+	m_selectedBackend = newSelectedBackend;
+	Q_EMIT selectedBackendChanged();
 }

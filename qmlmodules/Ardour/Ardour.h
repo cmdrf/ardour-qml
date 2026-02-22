@@ -19,6 +19,8 @@ class ArdourApp : public QObject
 
 	Q_PROPERTY(Session* session READ session NOTIFY sessionChanged FINAL)
 	Q_PROPERTY(PluginManager* pluginManager READ pluginManager CONSTANT FINAL)
+	Q_PROPERTY(QStringList availableBackends READ availableBackends CONSTANT FINAL)
+	Q_PROPERTY(QString selectedBackend READ selectedBackend WRITE setSelectedBackend NOTIFY selectedBackendChanged FINAL)
 
 public:
 	explicit ArdourApp(QObject* parent = nullptr);
@@ -32,12 +34,19 @@ public:
 	Q_INVOKABLE bool loadSession(const QUrl& ardourFile);
 	Q_INVOKABLE void closeSession();
 
+	QStringList availableBackends() const;
+
+	QString selectedBackend() const;
+	void setSelectedBackend(const QString& newSelectedBackend);
+
 Q_SIGNALS:
 	void sessionChanged();
+	void selectedBackendChanged();
 
 private:
 	Session* m_session = nullptr;
 	PluginManager* m_pluginManager;
+	QString m_selectedBackend;
 };
 
 #endif // ARDOUR_H
