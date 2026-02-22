@@ -11,6 +11,7 @@ find_package(Qt6 6.2 COMPONENTS Quick REQUIRED)
 
 add_subdirectory(ardour-cmake)
 add_subdirectory(qmlmodules/Ardour)
+add_subdirectory(tests)
 
 # Example Project
 qt_add_executable(ExampleProject example/example.cpp)
