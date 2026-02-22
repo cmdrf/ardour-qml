@@ -68,6 +68,12 @@ void GridModel::setEndSamples(qint64 newEndSamples)
 
 void GridModel::setBarModulo(int newBarModulo)
 {
+	if(newBarModulo < 0)
+	{
+		qWarning("barModulo can't be negative");
+		return;
+	}
+
 	if (m_barModulo == newBarModulo)
 		return;
 	m_barModulo = newBarModulo;
@@ -94,10 +100,12 @@ void GridModel::updateMap()
 		const int64_t length = m_endSamples - m_startSamples;
 		m_actualStartSamples = qMax(m_startSamples - length, 0);
 		m_actualEndSamples = m_endSamples + length;
+		const int64_t actualLength = qMin(m_actualEndSamples - m_actualStartSamples, 48000 * 300 * (m_barModulo+1)); // Excessive length safeguard
+		const int64_t actualActualEnd = m_actualStartSamples + actualLength;
 
 		auto map = Temporal::TempoMap::fetch();
 		const Temporal::superclock_t startTime = Temporal::samples_to_superclock(m_actualStartSamples, TEMPORAL_SAMPLE_RATE);
-		const Temporal::superclock_t endTime = Temporal::samples_to_superclock(m_actualEndSamples, TEMPORAL_SAMPLE_RATE);
+		const Temporal::superclock_t endTime = Temporal::samples_to_superclock(actualActualEnd, TEMPORAL_SAMPLE_RATE);
 		map->get_grid(m_points, startTime, endTime, m_barModulo, m_beatDivision);
 	}
 	endResetModel();
