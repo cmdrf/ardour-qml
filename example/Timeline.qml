@@ -4,6 +4,7 @@ import QtQuick.Controls
 import Ardour
 
 HorizontalHeaderView {
+	id: timeline
 	required property var sheetView
 	readonly property real samplesPerPixel: Ardour.session.currentEnd.samples / contentWidth
 
@@ -15,23 +16,29 @@ HorizontalHeaderView {
 	textRole: ""
 	delegate: Item {
 		height: 30
-		implicitWidth: contentWidth
+		implicitWidth: timeline.contentWidth
 		Repeater {
 			model: Ardour.session.tempoMap
 			delegate: Rectangle {
+				required property timepos time
+				required property int type
+				required property real noteTypesPerMinute
+				required property int divisionsPerBar
+				required property int noteValue
+
 				width: 1
 				height: 30
 				color: "green"
-				x: time.samples / samplesPerPixel
+				x: time.samples / timeline.samplesPerPixel
 				z: 1
 
 				Text {
-					visible: type == TempoMap.TempoPointType
+					visible: parent.type == TempoMap.TempoPointType
 					anchors.left: parent.left
 					anchors.top: parent.top
 					text: {
 						// Print at most one decimal place:
-						let bpmStr = noteTypesPerMinute.toFixed(1);
+						let bpmStr = parent.noteTypesPerMinute.toFixed(1);
 						if(bpmStr.endsWith(".0"))
 							bpmStr = bpmStr.slice(0, -2);
 						bpmStr;
@@ -39,10 +46,10 @@ HorizontalHeaderView {
 				}
 
 				Text {
-					visible: type == TempoMap.MeterPointType
+					visible: parent.type == TempoMap.MeterPointType
 					anchors.left: parent.left
 					anchors.bottom: parent.bottom
-					text: divisionsPerBar + "/" + noteValue
+					text: parent.divisionsPerBar + "/" + parent.noteValue
 				}
 			}
 		}
@@ -61,13 +68,13 @@ HorizontalHeaderView {
 			width: 1
 			height: 30
 			color: "#777777"
-			x: time.samples / samplesPerPixel
+			x: time.samples / timeline.samplesPerPixel
 
 			Text {
 				anchors.left: parent.right
 				anchors.top: parent.top
-				text: bbtBars
-				visible: bbtBeats == 1
+				text: parent.bbtBars
+				visible: parent.bbtBeats == 1
 			}
 		}
 	}
@@ -76,7 +83,7 @@ HorizontalHeaderView {
 	Shape {
 		width: 20
 		height: 10
-		x: Ardour.session.transportSample / samplesPerPixel - 10
+		x: Ardour.session.transportSample / timeline.samplesPerPixel - 10
 		y: 20
 		z: 10
 
@@ -101,11 +108,11 @@ HorizontalHeaderView {
 		anchors.fill: parent
 		onPressed: (mouse) => {
 			if(mouse.button === Qt.LeftButton)
-				Ardour.session.requestLocate(roundBeats(mouse.x * samplesPerPixel));
+				Ardour.session.requestLocate(roundBeats(mouse.x * timeline.samplesPerPixel));
 		}
 		onPositionChanged: (mouse) => {
 			if(mouse.buttons & Qt.LeftButton)
-				Ardour.session.requestLocate(roundBeats(mouse.x * samplesPerPixel));
+				Ardour.session.requestLocate(roundBeats(mouse.x * timeline.samplesPerPixel));
 		}
 	}
 }

@@ -3,29 +3,33 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 Rectangle {
+	id: strip
 	required property var stripable
 
 	color: "darkgrey"
 
 	ColumnLayout {
 		anchors.fill: parent
-		property real gain: stripable ? stripable.gainControl.value : 0.0
+		property real gain: strip.stripable ? strip.stripable.gainControl.value : 0.0
 		onGainChanged: if(!gainSlider.pressed) gainSlider.value = gain
 
 		Repeater {
-			model: stripable.processors
+			model: strip.stripable ? strip.stripable.processors : null
 			delegate: Text {
+				required property var processor
+				required property var type
+
 				text: type + ": " + processor.name
 			}
 		}
 
 		Slider {
 			id: gainSlider
-			enabled: stripable !== null
-			height: 300
-			width: 30
+			enabled: strip.stripable !== null
+			implicitHeight: 300
+			implicitWidth: 30
 			orientation: Qt.Vertical
-			onMoved: stripable.gainControl.value = value
+			onMoved: strip.stripable.gainControl.value = value
 		}
 	}
 }

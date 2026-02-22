@@ -3,10 +3,12 @@ import Ardour
 
 Rectangle {
 	required property var region
+	required property var route
+	required property real samplesPerPixel
 
-	x: region.position.samples / mainView.samplesPerPixel
+	x: region.position.samples / samplesPerPixel
 	height: sheetView.contentHeight / sheetView.rows // TODO
-	width: region.length.samples / mainView.samplesPerPixel
+	width: region.length.samples / samplesPerPixel
 	color: selection.regions.contains(region) ? Qt.lighter(route.presentationInfo.color) : route.presentationInfo.color
 	radius: 7
 
@@ -15,30 +17,30 @@ Rectangle {
 		anchors.right: parent.right
 		anchors.top: parent.top
 		font.pixelSize: 12
-		text: region.properties.name
+		text: parent.region.properties.name
 		elide: Text.ElideMiddle
 	}
 
 	Waveform {
 		anchors.fill: parent
-		audioRegion: region.dataType === Region.AudioType ? region : null
-		visible: region.dataType === Region.AudioType
+		audioRegion: parent.region.dataType === Region.AudioType ? parent.region : null
+		visible: parent.region.dataType === Region.AudioType
 		alphaBlending: true
 	}
 
 	MidiView {
 		anchors.fill: parent
-		visible: region.dataType === Region.MidiType
-		midiRegion: region.dataType === Region.MidiType ? region : null
+		visible: parent.region.dataType === Region.MidiType
+		midiRegion: parent.region.dataType === Region.MidiType ? region : null
 	}
 
 	MouseArea {
 		anchors.fill: parent
 		onClicked: (mouse) => {
 			if(mouse.modifiers & Qt.ShiftModifier)
-				selection.select(region, RegionSelection.Toggle);
+				selection.select(parent.region, RegionSelection.Toggle);
 			else
-				selection.select(region, RegionSelection.ClearAndSelect);
+				selection.select(parent.region, RegionSelection.ClearAndSelect);
 		}
 	}
 }

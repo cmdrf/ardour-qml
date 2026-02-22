@@ -55,12 +55,12 @@ ApplicationWindow {
 
             ToolButton {
                 icon.name: "media-playback-stop"
-                enabled: ardour.session !== null
-                onClicked: ardour.session.requestStop()
+                enabled: Ardour.session !== null
+                onClicked: Ardour.session.requestStop()
             }
 
             Label {
-                text: ardour.session.transportSample
+                text: Ardour.session.transportSample
             }
 
             Item {
@@ -96,7 +96,7 @@ ApplicationWindow {
         Strip {
             stripable: Ardour.session.selection.firstSelectedStripable
             Layout.fillHeight: true
-            width: 180
+            implicitWidth: 180
         }
 
         MainView {

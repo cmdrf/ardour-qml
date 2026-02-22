@@ -16,7 +16,7 @@ Rectangle {
 		anchors.fill: parent
 		onClicked: (mouse) => {
 			header.clicked();
-			ardour.session.selection.selectStripableAndMaybeGroup(route, (mouse.modifiers & Qt.ShiftModifier) ? CoreSelection.SelectionToggle : CoreSelection.SelectionSet)
+			Ardour.session.selection.selectStripableAndMaybeGroup(route, (mouse.modifiers & Qt.ShiftModifier) ? CoreSelection.SelectionToggle : CoreSelection.SelectionSet)
 		}
 	}
 

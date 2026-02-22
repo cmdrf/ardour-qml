@@ -11,8 +11,7 @@ GridLayout {
 	columns: 2
 
 	Item {
-		width: 200
-		height: 30
+		implicitWidth: 200
 		implicitHeight: 30
 	}
 
@@ -23,7 +22,7 @@ GridLayout {
 
 	VerticalHeaderView {
 		Layout.fillHeight: true
-		width: 200
+		implicitWidth: 200
 		clip: true
 
 		syncView: sheetView
@@ -69,6 +68,9 @@ GridLayout {
 			contentWidth: 5000
 			contentHeight: 1000
 			delegate: Item { // One track or playlist
+				id: routeDelegate
+				required property var route
+
 				height: sheetView.contentHeight / sheetView.rows // TODO
 				implicitWidth: sheetView.contentWidth
 
@@ -78,9 +80,10 @@ GridLayout {
 				}
 
 				Repeater {
-					model: route.playlist
+					model: parent.route.playlist
 					delegate: RegionDelegate {
-
+						samplesPerPixel: mainView.samplesPerPixel
+						route: routeDelegate.route
 					}
 				}
 			}

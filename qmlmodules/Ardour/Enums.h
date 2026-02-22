@@ -8,7 +8,6 @@
 namespace Ardour
 {
 Q_NAMESPACE
-QML_ELEMENT
 
 enum Placement
 {
