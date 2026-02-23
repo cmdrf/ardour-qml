@@ -138,6 +138,7 @@ void WaveformRenderer::render(QRhiCommandBuffer* cb)
 		}
 */
 		{
+			// Use stride to only update "min" members:
 			QRhiTextureSubresourceUploadDescription subUploadDesc(&m_peaksUpdate.front().min, m_peaksUpdate.size() * sizeof(ARDOUR::PeakData));
 			subUploadDesc.setDataStride(sizeof(ARDOUR::PeakData));
 
@@ -148,7 +149,10 @@ void WaveformRenderer::render(QRhiCommandBuffer* cb)
 		}
 
 		{
-			QRhiTextureSubresourceUploadDescription subUploadDesc(&m_peaksUpdate.front().max, m_peaksUpdate.size() * sizeof(ARDOUR::PeakData));
+			// Calculate remaining size when starting from "max" member:
+			const quint32 size = m_peaksUpdate.size() * sizeof(ARDOUR::PeakData) - sizeof(ARDOUR::PeakData::PeakDatum);
+			// Upload buffer starting from "max" member, with stride:
+			QRhiTextureSubresourceUploadDescription subUploadDesc(&m_peaksUpdate.front().max, size);
 			subUploadDesc.setDataStride(sizeof(ARDOUR::PeakData));
 
 			QRhiTextureUploadEntry uploadEntry(0, 0, subUploadDesc);
