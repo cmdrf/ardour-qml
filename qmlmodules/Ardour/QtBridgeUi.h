@@ -79,9 +79,10 @@ class QtBridgeUi : public QObject, public AbstractUI<QtBridgeUiRequest>
 
 public:
 	explicit QtBridgeUi(QObject *parent = nullptr);
-	~QtBridgeUi() {}; // Required for some reason
+	~QtBridgeUi(); // Required for some reason
 
 	static QtBridgeUi& instance();
+	static void destroy();
 
 	/// Primary connect template.
 	/** - Signal signature: R_sig(SignalArgs...)

@@ -16,11 +16,22 @@ QtBridgeUi::QtBridgeUi(QObject *parent) :
 
 }
 
+QtBridgeUi::~QtBridgeUi()
+{
+
+}
+
+static QtBridgeUi* inst = new QtBridgeUi;
 
 QtBridgeUi& QtBridgeUi::instance()
 {
-	static QtBridgeUi inst;
-	return inst;
+	return *inst;
+}
+
+void QtBridgeUi::destroy()
+{
+	delete inst;
+	inst = nullptr;
 }
 
 void QtBridgeUi::thread_init()
