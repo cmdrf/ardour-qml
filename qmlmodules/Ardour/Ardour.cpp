@@ -257,6 +257,7 @@ void ArdourApp::closeSession()
 {
 	if(m_session)
 	{
+		ARDOUR::AudioEngine::instance()->remove_session ();
 		delete m_session;
 		m_session = nullptr;
 		ARDOUR::AudioEngine::instance()->stop();
