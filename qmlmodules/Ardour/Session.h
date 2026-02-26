@@ -27,7 +27,7 @@ class Track;
 /// Wrapper around ARDOUR::Session
 class Session : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 	QML_ANONYMOUS
     Q_DISABLE_COPY(Session)
 
@@ -116,6 +116,7 @@ public Q_SLOTS:
 	void maybeEnableRecord();
 	void disableRecord();
 	void requestRoll(); // Play
+	void requestPlayLoop(bool newPlayLoop, bool changeTransportRoll = false) {m_session->request_play_loop(newPlayLoop, changeTransportRoll);}
 	void requestLocate(qint64 sample);
 	void requestStop();
 

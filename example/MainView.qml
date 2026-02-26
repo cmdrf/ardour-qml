@@ -6,7 +6,10 @@ import Ardour
 GridLayout {
 	id: mainView
 
+	property bool loopEnabled: false
 	property real samplesPerPixel: Ardour.session.currentEnd.samples / sheetView.contentWidth
+
+	signal loopSet
 
 	columns: 2
 
@@ -16,8 +19,10 @@ GridLayout {
 	}
 
 	Timeline {
+		loopEnabled: mainView.loopEnabled
 		sheetView: sheetView
 		Layout.fillWidth: true
+		onLoopSet: mainView.loopSet()
 	}
 
 	VerticalHeaderView {

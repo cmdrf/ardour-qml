@@ -5,11 +5,14 @@ import QtQuick.Dialogs
 import Ardour
 
 ApplicationWindow {
+    id: mainWindow
     width: 1280
     height: 720
     visible: true
     title: qsTr("Example Project")
     color: "#555555"
+
+    property bool loopEnabled: false
 
     menuBar: MenuBar {
         Menu {
@@ -46,17 +49,24 @@ ApplicationWindow {
         RowLayout {
             anchors.fill: parent
 
+            // See https://specifications.freedesktop.org/icon-naming/latest/#names for icons
             ToolButton {
                 icon.name: "media-playback-start"
                 icon.color: Ardour.session && Ardour.session.transportSpeed === 0.0 ? "black" : "green"
                 enabled: Ardour.session !== null
-                onClicked: Ardour.session.requestRoll()
+                onClicked: mainWindow.loopEnabled ? Ardour.session.requestPlayLoop(true) : Ardour.session.requestRoll()
             }
 
             ToolButton {
                 icon.name: "media-playback-stop"
                 enabled: Ardour.session !== null
                 onClicked: Ardour.session.requestStop()
+            }
+
+            ToolButton {
+                icon.name: "media-playlist-repeat"
+                icon.color: mainWindow.loopEnabled ? "yellow" : "black"
+                onClicked: mainWindow.loopEnabled = !mainWindow.loopEnabled
             }
 
             Label {
@@ -100,8 +110,10 @@ ApplicationWindow {
         }
 
         MainView {
+            loopEnabled: mainWindow.loopEnabled
             Layout.fillWidth: true
             Layout.fillHeight: true
+            onLoopSet: mainWindow.loopEnabled = true
         }
     }
 }
