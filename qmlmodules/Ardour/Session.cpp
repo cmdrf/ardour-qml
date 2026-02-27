@@ -98,6 +98,11 @@ Track* Session::newMidiTrack(const ChanCount& input, const ChanCount& output, bo
 	return new Track(nullptr, tracks.front()); // Don't set parent, so QML takes ownership
 }
 
+int Session::saveState(const QString& snapshotName, bool pending, bool switchToSnapshot, bool templateOnly, bool forArchive, bool onlyUsedAssets)
+{
+	return m_session->save_state(snapshotName.toStdString(), pending, switchToSnapshot, templateOnly, forArchive, onlyUsedAssets);
+}
+
 Session::RecordState Session::recordState() const
 {
 	switch(m_session->record_status())

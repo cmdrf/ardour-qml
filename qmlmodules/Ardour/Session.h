@@ -100,6 +100,13 @@ public:
 		bool triggerVisibility = false
 		);
 
+	Q_INVOKABLE int saveState (const QString& snapshotName = "",
+		bool pending = false,
+		bool switchToSnapshot = false,
+		bool templateOnly = false,
+		bool forArchive = false,
+		bool onlyUsedAssets = false);
+
 	TimePos currentEnd() const;
 	void setCurrentEnd(const TimePos& newCurrentEnd);
 
