@@ -3,6 +3,7 @@
 
 #include <pbd/properties.h>
 
+#include <QJsonObject>
 #include <QVariant>
 #include <QMetaMethod>
 
@@ -55,7 +56,7 @@ Stateful::Stateful(QObject *parent, std::shared_ptr<PBD::Stateful> stateful) :
 	b.connect(stateful->PropertyChanged, this, &Stateful::updateProperties);
 }
 
-QVariantMap Stateful::properties()
+const QVariantMap& Stateful::properties()
 {
 	// Deferred population:
 	if(m_properties.isEmpty())
@@ -81,4 +82,28 @@ void Stateful::updateProperties(const PBD::PropertyChange& change)
 		m_properties[name] = newValue;
 	}
 	Q_EMIT propertiesChanged();
+}
+
+const QVariantMap& Stateful::extra()
+{
+	if(m_extra.isEmpty())
+	{
+		auto node = m_stateful->extra_xml("ardour-qml", false);
+		if(node)
+			m_extra = QJsonValue::fromJson(node->child_content()).toObject().toVariantMap();
+	}
+	return m_extra;
+}
+
+void Stateful::setExtra(const QVariantMap& newExtra)
+{
+	if (m_extra == newExtra)
+		return;
+	m_extra = newExtra;
+	auto node = m_stateful->extra_xml("ardour-qml", true);
+	auto text = node->child("text");
+	if(!text)
+		text = node->add_child("text");
+	text->set_content(QJsonValue::fromVariant(m_extra).toJson().toStdString());
+	Q_EMIT extraChanged();
 }
