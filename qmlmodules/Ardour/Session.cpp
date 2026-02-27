@@ -9,13 +9,13 @@
 #include <ardour/audio_track.h>
 #include <ardour/midi_track.h>
 
-Session::Session(QObject* parent, ARDOUR::Session* session) :
-	QObject(parent),
-	m_session(session),
+Session::Session(QObject* parent, std::shared_ptr<ARDOUR::Session> session) :
+	StatefulDestructible(parent, session),
+	m_session(session.get()),
 	m_transportSpeed(session->transport_speed()),
 	m_playLoop(session->get_play_loop()),
 	m_selection(this, session->selection()),
-	m_tempoMap(this, session)
+	m_tempoMap(this, session.get())
 {
 	QtBridgeUi& b = QtBridgeUi::instance();
 	b.connect(m_session->DirtyChanged, this, &Session::dirtyChanged);

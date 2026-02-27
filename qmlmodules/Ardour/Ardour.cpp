@@ -199,7 +199,7 @@ bool ArdourApp::createSession(const QString& dir, const QString& snapshotName, u
 	busProfile.master_out_channels = 2;
 
 	ARDOUR::AudioEngine* engine = ARDOUR::AudioEngine::instance();
-	ARDOUR::Session* session = new ARDOUR::Session(*engine, dir.toStdString(), snapshotName.toStdString(), &busProfile);
+	std::shared_ptr<ARDOUR::Session> session(new ARDOUR::Session(*engine, dir.toStdString(), snapshotName.toStdString(), &busProfile));
 	m_session = new Session(this, session);
 	Q_EMIT sessionChanged();
 	return true;
@@ -238,7 +238,7 @@ bool ArdourApp::loadSession(const QString& dir, const QString& snapshotName)
 		return false;
 
 	ARDOUR::AudioEngine* engine  = ARDOUR::AudioEngine::instance ();
-	ARDOUR::Session*     session = new ARDOUR::Session (*engine, dirStr, state);
+	std::shared_ptr<ARDOUR::Session> session(new ARDOUR::Session (*engine, dirStr, state));
 	m_session = new Session(this, session);
 	Q_EMIT sessionChanged();
 	return true;

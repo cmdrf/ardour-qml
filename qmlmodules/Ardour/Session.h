@@ -25,7 +25,7 @@ class Location;
 class Track;
 
 /// Wrapper around ARDOUR::Session
-class Session : public QObject
+class Session : public StatefulDestructible
 {
 	Q_OBJECT
 	QML_ANONYMOUS
@@ -62,7 +62,7 @@ public:
 	};
 	Q_ENUM(RecordState);
 
-	Session(QObject* parent, ARDOUR::Session* session);
+	Session(QObject* parent, std::shared_ptr<ARDOUR::Session> session);
 
 	ARDOUR::Session* session() {return m_session;}
 
