@@ -12,20 +12,24 @@ ApplicationWindow {
     title: qsTr("Example Project")
     color: "#555555"
 
-    property bool loopEnabled: false
-
     menuBar: MenuBar {
         Menu {
            title: qsTr("&File")
            Action {
                text: qsTr("&New...")
                onTriggered: createDialog.open()
+               enabled: !Ardour.session
            }
            Action {
                text: qsTr("&Open...")
                onTriggered: openDialog.open()
+               enabled: !Ardour.session
            }
-           Action { text: qsTr("&Save") }
+           Action {
+               text: qsTr("&Save")
+               enabled: Ardour.session && Ardour.session.dirty
+               onTriggered: Ardour.session.saveState()
+           }
            Action { text: qsTr("Save &As...") }
            MenuSeparator { }
            Action { text: qsTr("&Quit") }
@@ -65,8 +69,8 @@ ApplicationWindow {
 
             ToolButton {
                 icon.name: "media-playlist-repeat"
-                icon.color: mainWindow.loopEnabled ? "yellow" : "black"
-                onClicked: mainWindow.loopEnabled = !mainWindow.loopEnabled
+                icon.color: Ardour.session.extra.loopEnabled ? "yellow" : "black"
+                onClicked: Ardour.session.extra.loopEnabled = !Ardour.session.extra.loopEnabled
             }
 
             Label {
@@ -110,10 +114,8 @@ ApplicationWindow {
         }
 
         MainView {
-            loopEnabled: mainWindow.loopEnabled
             Layout.fillWidth: true
             Layout.fillHeight: true
-            onLoopSet: mainWindow.loopEnabled = true
         }
     }
 }

@@ -7,9 +7,6 @@ HorizontalHeaderView {
 	id: timeline
 	required property var sheetView
 	readonly property real samplesPerPixel: Ardour.session.currentEnd.samples / contentWidth
-	property bool loopEnabled: false
-
-	signal loopSet
 
 	function roundBeats(samples) {
 		let beats = Ardour.session.tempoMap.quartersAt(TimePos.fromSamples(samples));
@@ -109,7 +106,7 @@ HorizontalHeaderView {
 	// Actual Loop
 	Rectangle {
 		opacity: 0.5
-		color: timeline.loopEnabled && !ghostLoop.visible ? "yellow" : "black"
+		color: Ardour.session.extra.loopEnabled && !ghostLoop.visible ? "yellow" : "black"
 		anchors.top: parent.top
 		anchors.bottom: parent.verticalCenter
 		visible: Ardour.session.autoLoopLocation !== null
@@ -152,7 +149,7 @@ HorizontalHeaderView {
 			let end = Math.max(ghostLoop.startSamples, ghostLoop.endSamples);
 
 			Ardour.session.setAutoLoopLocation(TimePos.fromSamples(start), TimePos.fromSamples(end));
-			timeline.loopSet();
+			Ardour.session.extra.loopEnabled = true;
 		}
 	}
 
