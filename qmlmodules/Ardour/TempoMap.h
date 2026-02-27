@@ -74,6 +74,33 @@ public:
 	Q_INVOKABLE Meter meter(int divisionsPerBar, int noteValue) {return Temporal::Meter(divisionsPerBar, noteValue);}
 };
 
+class BbtArgument
+{
+	Q_GADGET
+
+	Q_PROPERTY(int bars READ bars WRITE setBars FINAL)
+	Q_PROPERTY(int beats READ beats WRITE setBeats FINAL)
+	Q_PROPERTY(int ticks READ ticks WRITE setTicks FINAL)
+
+public:
+	BbtArgument() = default;
+	BbtArgument(const Temporal::BBT_Argument& bbt) : m_bbt(bbt) {}
+
+	int bars() const {return m_bbt.bars;}
+	void setBars(int newBars) {m_bbt.bars = newBars;}
+
+	int beats() const {return m_bbt.beats;}
+	void setBeats(int newBeats) {m_bbt.beats = newBeats;}
+
+	int ticks() const {return m_bbt.ticks;}
+	void setTicks(int newTicks) {m_bbt.ticks = newTicks;}
+
+	/// Conversion operator to Temporal::Tempo
+	operator Temporal::BBT_Argument() const {return m_bbt;}
+
+private:
+	Temporal::BBT_Argument m_bbt;
+};
 
 class TempoMap : public QAbstractListModel
 {
@@ -105,6 +132,7 @@ public:
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 	QHash<int, QByteArray> roleNames() const override;
 
+	Q_INVOKABLE BbtArgument bbtAt(const TimePos& time) const;
 	Q_INVOKABLE Beats quartersAt(const TimePos& time) const;
 	Q_INVOKABLE qint64 sampleAt(const Beats& beats) const;
 	Q_INVOKABLE qint64 sampleAt(const TimePos& time) const;

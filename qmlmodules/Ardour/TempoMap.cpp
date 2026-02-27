@@ -52,6 +52,12 @@ QHash<int, QByteArray> TempoMap::roleNames() const
 	return roles;
 }
 
+BbtArgument TempoMap::bbtAt(const TimePos& time) const
+{
+	auto map = Temporal::TempoMap::fetch();
+	return map->bbt_at(time);
+}
+
 Beats TempoMap::quartersAt(const TimePos& time) const
 {
 	auto map = Temporal::TempoMap::fetch();

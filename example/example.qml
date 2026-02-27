@@ -58,7 +58,7 @@ ApplicationWindow {
                 icon.name: "media-playback-start"
                 icon.color: Ardour.session && Ardour.session.transportSpeed === 0.0 ? "black" : "green"
                 enabled: Ardour.session !== null
-                onClicked: mainWindow.loopEnabled ? Ardour.session.requestPlayLoop(true) : Ardour.session.requestRoll()
+                onClicked: Ardour.session.extra.loopEnabled ? Ardour.session.requestPlayLoop(true) : Ardour.session.requestRoll()
             }
 
             ToolButton {
@@ -74,7 +74,10 @@ ApplicationWindow {
             }
 
             Label {
-                text: Ardour.session.transportSample
+                text: {
+                    let bbt = Ardour.session.tempoMap.bbtAt(TimePos.fromSamples(Ardour.session.transportSample));
+                    return bbt.bars + ":" + bbt.beats
+                }
             }
 
             Item {
