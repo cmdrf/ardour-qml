@@ -76,9 +76,10 @@ GridLayout {
 
 				MouseArea {
 					anchors.fill: parent
-					onClicked: selection.clear()
+					onClicked: selection.clear() // When clicking in the free area behind the Regions, deselect all
 				}
 
+				// Regions (Audio and MIDI):
 				Repeater {
 					model: parent.route.playlist
 					delegate: RegionDelegate {
