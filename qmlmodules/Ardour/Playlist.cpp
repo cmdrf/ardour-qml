@@ -60,6 +60,8 @@ void Playlist::setPlaylist(std::shared_ptr<ARDOUR::Playlist> playlist)
 	if(reset)
 		endResetModel();
 	Q_EMIT regionsChanged();
+
+	checkEmpty();
 }
 
 int Playlist::rowCount(const QModelIndex& parent) const
@@ -196,6 +198,7 @@ void Playlist::_addRegion(std::weak_ptr<ARDOUR::Region> region)
 	m_regions.append(new Region(this, regionPtr));
 	endInsertRows();
 	Q_EMIT regionsChanged();
+	checkEmpty();
 }
 
 void Playlist::_removeRegion(std::weak_ptr<ARDOUR::Region> region)
@@ -222,4 +225,15 @@ void Playlist::_removeRegion(std::weak_ptr<ARDOUR::Region> region)
 	m_regions.removeAt(index);
 	endRemoveRows();
 	Q_EMIT regionsChanged();
+
+	checkEmpty();
+}
+
+void Playlist::checkEmpty()
+{
+	if(m_empty != m_playlist->empty())
+	{
+		m_empty = m_playlist->empty();
+		Q_EMIT emptyChanged();
+	}
 }

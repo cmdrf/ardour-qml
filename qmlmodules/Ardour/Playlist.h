@@ -14,6 +14,7 @@ class Playlist : public QAbstractListModel
 
 	/// Alternative way to access regions
 	Q_PROPERTY(QVector<Region*> regions READ regions NOTIFY regionsChanged FINAL)
+	Q_PROPERTY(bool empty READ empty NOTIFY emptyChanged FINAL)
 
 public:
 	enum
@@ -30,6 +31,8 @@ public:
 	QHash<int, QByteArray> roleNames() const override;
 
 	const QVector<Region*>& regions() const {return m_regions;}
+
+	bool empty() const {return m_empty;}
 
 public Q_SLOTS:
 	void addRegion (Region*, TimePos const & position, float times = 1, bool autoPartition = false);
@@ -65,16 +68,20 @@ public Q_SLOTS:
 
 Q_SIGNALS:
 	void regionsChanged();
+	void emptyChanged();
 
 private Q_SLOTS:
 	void _addRegion(std::weak_ptr<ARDOUR::Region>);
 	void _removeRegion(std::weak_ptr<ARDOUR::Region>);
 
 private:
+	void checkEmpty();
+
 	std::shared_ptr<ARDOUR::Playlist> m_playlist;
 	std::shared_ptr<PBD::ScopedConnection> m_playlistAddRegionConnection;
 	std::shared_ptr<PBD::ScopedConnection> m_playlistRemoveRegionConnection;
 	QVector<Region*> m_regions;
+	bool m_empty = false;
 };
 
 #endif // PLAYLIST_H
