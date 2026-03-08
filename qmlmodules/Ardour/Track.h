@@ -11,7 +11,7 @@ class Track : public Route
 	Q_OBJECT
 	Q_PROPERTY(FreezeState freezeState READ freezeState NOTIFY freezeStateChanged FINAL)
 	Q_PROPERTY(Ardour::AlignStyle alignStyle READ alignStyle WRITE setAlignStyle NOTIFY alignStyleChanged FINAL)
-	Q_PROPERTY(Playlist* playlist READ playlist CONSTANT)
+	Q_PROPERTY(Playlist* playlist READ playlist NOTIFY playlistChanged)
 
 public:
 	enum FreezeState
@@ -26,13 +26,14 @@ public:
 
 	FreezeState freezeState() const;
 	Ardour::AlignStyle alignStyle() const;
-	Playlist* playlist() {return &m_playlist;}
+	Playlist* playlist() {return m_playlist;}
 
 	void setAlignStyle(const Ardour::AlignStyle& newAlignStyle);
 
 Q_SIGNALS:
 	void freezeStateChanged();
 	void alignStyleChanged();
+	void playlistChanged();
 
 private Q_SLOTS:
 	void updatePlaylist();
@@ -40,7 +41,7 @@ private Q_SLOTS:
 private:
 	const ARDOUR::Track* track() const;
 	ARDOUR::Track* track();
-	Playlist m_playlist;
+	Playlist* m_playlist;
 };
 
 #endif // TRACK_H

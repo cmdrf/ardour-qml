@@ -1,20 +1,18 @@
 #ifndef PLAYLIST_H
 #define PLAYLIST_H
 
-#include <ardour/region.h>
+#include "SessionObject.h"
+
+#include <ardour/playlist.h>
 #include <QAbstractListModel>
 
 class Region;
 class TimePos;
 class TimeCount;
 
-class Playlist : public QAbstractListModel
+class PlaylistModel : public QAbstractListModel
 {
 	Q_OBJECT
-
-	/// Alternative way to access regions
-	Q_PROPERTY(QVector<Region*> regions READ regions NOTIFY regionsChanged FINAL)
-	Q_PROPERTY(bool empty READ empty NOTIFY emptyChanged FINAL)
 
 public:
 	enum
@@ -22,15 +20,39 @@ public:
 		RegionRole = Qt::UserRole
 	};
 
-	explicit Playlist(QObject *parent = nullptr);
-
-	void setPlaylist(std::shared_ptr<ARDOUR::Playlist> playlist);
+	explicit PlaylistModel(QObject* parent, std::shared_ptr<ARDOUR::Playlist> playlist);
 
 	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 	QHash<int, QByteArray> roleNames() const override;
 
-	const QVector<Region*>& regions() const {return m_regions;}
+	const QVector<Region*>& regions() const {return m_regions;};
+
+private Q_SLOTS:
+	void _addRegion(std::weak_ptr<ARDOUR::Region>);
+	void _removeRegion(std::weak_ptr<ARDOUR::Region>);
+
+private:
+	QVector<Region*> m_regions;
+	std::shared_ptr<ARDOUR::Playlist> m_playlist;
+
+};
+
+class Playlist : public SessionObject
+{
+	Q_OBJECT
+
+	Q_PROPERTY(PlaylistModel* regions READ regions NOTIFY regionsChanged FINAL)
+	Q_PROPERTY(bool empty READ empty NOTIFY emptyChanged FINAL)
+
+public:
+	explicit Playlist(QObject* parent, std::shared_ptr<ARDOUR::Playlist> playlist);
+
+	std::shared_ptr<ARDOUR::Playlist> playlist() {return std::dynamic_pointer_cast<ARDOUR::Playlist>(m_stateful);}
+	const std::shared_ptr<ARDOUR::Playlist> playlist() const {return std::dynamic_pointer_cast<ARDOUR::Playlist>(m_stateful);}
+
+	const PlaylistModel* regions() const {return &m_regions;}
+	PlaylistModel* regions() {return &m_regions;}
 
 	bool empty() const {return m_empty;}
 
@@ -52,8 +74,8 @@ public Q_SLOTS:
 //	void duplicateRange (TimelineRange&, float timesTimePos
 //	void duplicateRanges (std::list<TimelineRange>&, float times);
 	void nudgeAfter (TimePos const & start, TimeCount const & distance, bool forwards);
-//	virtual std::shared_ptr<Region> combine (const RegionList&, std::shared_ptr<Track>);
-	virtual void uncombine (Region*);
+//	std::shared_ptr<Region> combine (const RegionList&, std::shared_ptr<Track>);
+	void uncombine (Region*);
 //	void fadeRange (std::list<TimelineRange>&);
 //	void removeGaps (TimePos const & gap_threshold, TimePos const & leave_gap, std::function<void (timepos_t, TimeCount)> gap_callback);
 
@@ -71,16 +93,12 @@ Q_SIGNALS:
 	void emptyChanged();
 
 private Q_SLOTS:
-	void _addRegion(std::weak_ptr<ARDOUR::Region>);
-	void _removeRegion(std::weak_ptr<ARDOUR::Region>);
-
-private:
 	void checkEmpty();
 
-	std::shared_ptr<ARDOUR::Playlist> m_playlist;
-	std::shared_ptr<PBD::ScopedConnection> m_playlistAddRegionConnection;
-	std::shared_ptr<PBD::ScopedConnection> m_playlistRemoveRegionConnection;
-	QVector<Region*> m_regions;
+private:
+//	std::shared_ptr<PBD::ScopedConnection> m_playlistAddRegionConnection;
+//	std::shared_ptr<PBD::ScopedConnection> m_playlistRemoveRegionConnection;
+	PlaylistModel m_regions;
 	bool m_empty = false;
 };
 

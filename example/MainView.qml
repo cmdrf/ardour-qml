@@ -81,7 +81,7 @@ GridLayout {
 
 				// Regions (Audio and MIDI):
 				Repeater {
-					model: parent.route.playlist
+					model: parent.route.playlist.regions
 					delegate: RegionDelegate {
 						samplesPerPixel: mainView.samplesPerPixel
 						route: routeDelegate.route

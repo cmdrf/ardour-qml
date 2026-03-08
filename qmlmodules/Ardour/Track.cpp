@@ -2,15 +2,14 @@
 #include "QtBridgeUi.h"
 
 
-Track::Track(QObject* parent, std::shared_ptr<ARDOUR::Track> track)
-	: Route{parent, track}
+Track::Track(QObject* parent, std::shared_ptr<ARDOUR::Track> track) :
+	Route{parent, track},
+	m_playlist{new Playlist(this, track->playlist())}
 {
 	QtBridgeUi& b = QtBridgeUi::instance();
 	b.connect(track->FreezeChange, this, &Track::freezeStateChanged);
 	b.connect(track->PlaylistChanged, this, &Track::updatePlaylist);
 	b.connect(track->PlaylistAdded, this, &Track::updatePlaylist);
-
-	m_playlist.setPlaylist(track->playlist());
 }
 
 Track::FreezeState Track::freezeState() const
@@ -42,5 +41,7 @@ void Track::setAlignStyle(const Ardour::AlignStyle& newAlignStyle)
 
 void Track::updatePlaylist()
 {
-	m_playlist.setPlaylist(track()->playlist());
+	delete m_playlist;
+	m_playlist = new Playlist(this, track()->playlist());
+	Q_EMIT playlistChanged();
 }

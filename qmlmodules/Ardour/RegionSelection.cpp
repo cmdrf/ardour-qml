@@ -57,9 +57,9 @@ void RegionSelection::select(Playlist* playlist, SelectionFlags command)
 		changed = true;
 	}
 
-	if(command & SelectionFlag::Toggle && !playlist->regions().isEmpty())
+	if(command & SelectionFlag::Toggle && !playlist->empty())
 	{
-		for(auto& r: playlist->regions())
+		for(auto& r: playlist->regions()->regions())
 		{
 			if(m_regions.contains(r))
 				removeRegion(r);
@@ -71,7 +71,7 @@ void RegionSelection::select(Playlist* playlist, SelectionFlags command)
 
 	if(command & SelectionFlag::Select)
 	{
-		for(auto& r: playlist->regions())
+		for(auto& r: playlist->regions()->regions())
 		{
 			if(!m_regions.contains(r))
 			{
@@ -83,7 +83,7 @@ void RegionSelection::select(Playlist* playlist, SelectionFlags command)
 
 	if(command & SelectionFlag::Deselect)
 	{
-		for(auto& r: playlist->regions())
+		for(auto& r: playlist->regions()->regions())
 		{
 			if(m_regions.contains(r))
 			{
