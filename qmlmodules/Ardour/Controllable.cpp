@@ -8,6 +8,7 @@ Controllable::Controllable(QObject *parent, std::shared_ptr<PBD::Controllable> c
 	QtBridgeUi& b = QtBridgeUi::instance();
 
 	b.connect(controllable->Changed, this, &Controllable::valueChanged);
+	b.connect(controllable->TouchChanged, this, &Controllable::touchingChanged);
 }
 
 double Controllable::value() const
@@ -18,4 +19,9 @@ double Controllable::value() const
 void Controllable::setValue(double newValue)
 {
 	controllable()->set_value(newValue, PBD::Controllable::NoGroup);
+}
+
+bool Controllable::touching() const
+{
+	return controllable()->touching();
 }

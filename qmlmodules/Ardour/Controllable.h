@@ -12,6 +12,7 @@ class Controllable : public StatefulDestructible
 
 	Q_PROPERTY(QString name READ name CONSTANT)
 	Q_PROPERTY(double value READ value WRITE setValue NOTIFY valueChanged FINAL)
+	Q_PROPERTY(bool touching READ touching NOTIFY touchingChanged FINAL)
 
 public:
 	explicit Controllable(QObject *parent, std::shared_ptr<PBD::Controllable> controllable);
@@ -24,9 +25,11 @@ public:
 	double value() const;
 	void setValue(double newValue);
 
-Q_SIGNALS:
+	bool touching() const;
 
+Q_SIGNALS:
 	void valueChanged();
+	void touchingChanged();
 
 private:
 };
