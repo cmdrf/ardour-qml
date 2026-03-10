@@ -16,7 +16,7 @@ Rectangle {
 		anchors.fill: parent
 		onClicked: (mouse) => {
 			header.clicked();
-			Ardour.session.selection.selectStripableAndMaybeGroup(route, (mouse.modifiers & Qt.ShiftModifier) ? CoreSelection.SelectionToggle : CoreSelection.SelectionSet)
+			Ardour.session.selection.selectStripableAndMaybeGroup(header.route, (mouse.modifiers & Qt.ShiftModifier) ? CoreSelection.SelectionToggle : CoreSelection.SelectionSet)
 		}
 	}
 
@@ -24,17 +24,17 @@ Rectangle {
 		anchors.fill: parent
 
 		Text {
-			text: trackNumber
+			text: header.route.trackNumber
 		}
 
 		Button {
-			contentItem: Text{text: "M"; color: route.muted ? "blue" : (route.mutedByOthersSoloing ? "lightblue" : "black")}
-			onClicked: route.muteControl.value = route.muted ? 0.0 : 1.0
+			contentItem: Text{text: "M"; color: header.route.muted ? "blue" : (header.route.mutedByOthersSoloing ? "lightblue" : "black")}
+			onClicked: header.route.muteControl.value = header.route.muted ? 0.0 : 1.0
 		}
 
 		Button {
-			contentItem: Text{text: "S"; color: route.soloed ? "orange" : "black"}
-			onClicked: route.soloControl.value = route.soloed ? 0.0 : 1.0
+			contentItem: Text{text: "S"; color: header.route.soloed ? "orange" : "black"}
+			onClicked: header.route.soloControl.value = header.route.soloed ? 0.0 : 1.0
 		}
 	}
 }

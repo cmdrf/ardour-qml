@@ -6,7 +6,11 @@
 
 CoreSelection::CoreSelection(QObject* parent, ARDOUR::CoreSelection& coreSelection) :
 	m_coreSelection(coreSelection)
-{}
+{
+	QtBridgeUi& b = QtBridgeUi::instance();
+
+	b.connect(ARDOUR::PresentationInfo::Change, this, &CoreSelection::handlePresentationChange);
+}
 
 bool CoreSelection::selectStripableAndMaybeGroup(Stripable* s, SelectionOperation op, bool withGroup, bool routesOnly)
 {
