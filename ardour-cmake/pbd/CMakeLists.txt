@@ -33,6 +33,7 @@ add_library(pbd SHARED
 	${L}/pbd/malign.cc
 	${L}/pbd/md5.cc
 	${L}/pbd/microseconds.cc
+	${L}/pbd/mutex.cc
 	${L}/pbd/mountpoint.cc
 	${L}/pbd/openuri.cc
 	${L}/pbd/pathexpand.cc
@@ -45,6 +46,7 @@ add_library(pbd SHARED
 	${L}/pbd/reallocpool.cc
 	${L}/pbd/resource.cc
 	${L}/pbd/receiver.cc
+	${L}/pbd/rwlock.cc
 	${L}/pbd/search_path.cc
 	${L}/pbd/semutils.cc
 	${L}/pbd/shortpath.cc
@@ -58,10 +60,11 @@ add_library(pbd SHARED
 	${L}/pbd/strsplit.cc
 	${L}/pbd/system_exec.cc
 	${L}/pbd/textreceiver.cc
-	${L}/pbd/transmitter.cc
+	${L}/pbd/thread_pool.cc
 	${L}/pbd/timer.cc
 	${L}/pbd/timing.cc
 	${L}/pbd/tlsf.cc
+	${L}/pbd/transmitter.cc
 	${L}/pbd/undo.cc
 	${L}/pbd/utf8_utils.cc
 	${L}/pbd/uuid.cc

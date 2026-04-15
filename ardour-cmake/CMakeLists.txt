@@ -105,6 +105,7 @@ add_library(ardourlib SHARED
 	${A}/default_click.cc
 	${A}/delayline.cc
 	${A}/delivery.cc
+	${A}/demo_sessions.cc
 	${A}/directory_names.cc
 	${A}/disk_io.cc
 	${A}/disk_reader.cc
@@ -197,7 +198,7 @@ add_library(ardourlib SHARED
     ${A}/minibpm.cc
     ${A}/mix.cc
     ${A}/mixer_scene.cc
-    ${A}/mode.cc
+ #   ${A}/mode.cc
     ${A}/monitor_control.cc
     ${A}/monitor_port.cc
     ${A}/monitor_processor.cc
@@ -256,6 +257,9 @@ add_library(ardourlib SHARED
     ${A}/rt_midibuffer.cc
     ${A}/rt_task.cc
     ${A}/rt_tasklist.cc
+	${A}/scala_scl.cc
+	${A}/scale.cc
+	${A}/scale_provider.cc
     ${A}/scene_change.cc
     ${A}/search_paths.cc
     ${A}/segment_descriptor.cc
